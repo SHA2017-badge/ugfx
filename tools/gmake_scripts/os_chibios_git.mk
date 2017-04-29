@@ -36,7 +36,7 @@
 PATHLIST += CHIBIOS
 
 # Startup files.
-include $(CHIBIOS)/os/common/ports/$(CHIBIOS_CPUCLASS)/compilers/GCC/mk/$(CHIBIOS_STARTUP).mk
+include $(CHIBIOS)/os/common/startup/$(CHIBIOS_CPUCLASS)/compilers/GCC/mk/$(CHIBIOS_STARTUP).mk
 
 # HAL-OSAL files (optional).
 include $(CHIBIOS)/os/hal/hal.mk
@@ -45,7 +45,7 @@ include $(CHIBIOS)/os/hal/osal/rt/osal.mk
 
 # RTOS files (optional).
 include $(CHIBIOS)/os/rt/rt.mk
-include $(CHIBIOS)/os/rt/ports/$(CHIBIOS_CPUCLASS)/compilers/GCC/mk/port_$(CHIBIOS_PORT).mk
+include $(CHIBIOS)/os/common/ports/$(CHIBIOS_CPUCLASS)/compilers/GCC/mk/port_$(CHIBIOS_PORT).mk
 
 # Specific board files
 ifneq ($(CHIBIOS_BOARD),)
@@ -73,7 +73,8 @@ ifneq ($(LDSCRIPT),)
 endif
 
 # Add include files
-INCPATH +=  $(STARTUPINC) \
+INCPATH +=	$(CHIBIOS)/os/license \
+			$(STARTUPINC) \
             $(KERNINC) \
             $(PORTINC) \
             $(OSALINC) \

@@ -510,9 +510,7 @@ static void BSP_SDRAM_Initialization_sequence(SDRAM_HandleTypeDef *hsdram, uint3
 static void BSP_SDRAM_MspInit(SDRAM_HandleTypeDef  *hsdram)
 {  
   static DMA_HandleTypeDef dma_handle;
-#if !GFX_USE_OS_CHIBIOS
   GPIO_InitTypeDef gpio_init_structure;
-#endif
   
   /* Enable FMC clock */
   __HAL_RCC_FMC_CLK_ENABLE();
@@ -529,7 +527,6 @@ static void BSP_SDRAM_MspInit(SDRAM_HandleTypeDef  *hsdram)
   __HAL_RCC_GPIOH_CLK_ENABLE();
   
   /* Common GPIO configuration - some are already setup by ChibiOS Init */
-#if !GFX_USE_OS_CHIBIOS
   gpio_init_structure.Mode      = GPIO_MODE_AF_PP;
   gpio_init_structure.Pull      = GPIO_PULLUP;
   gpio_init_structure.Speed     = GPIO_SPEED_FAST;
@@ -564,7 +561,6 @@ static void BSP_SDRAM_MspInit(SDRAM_HandleTypeDef  *hsdram)
   /* GPIOH configuration */  
   gpio_init_structure.Pin   = GPIO_PIN_3 | GPIO_PIN_5;
   HAL_GPIO_Init(GPIOH, &gpio_init_structure); 
-#endif
   
   /* Configure common DMA parameters */
   dma_handle.Init.Channel             = SDRAM_DMAx_CHANNEL;

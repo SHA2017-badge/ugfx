@@ -31,6 +31,8 @@ FEATURE:	Added justifyWordWrap, justifyNoWordWrap text justification to GDISP (r
 FEATURE:	Added justifyPad, justifyNoPad text justification to GDISP
 FEATURE:	Added GDISP_NEED_TEXT_BOXPADLR and GDISP_NEED_TEXT_BOXPADTB configuration options
 FIX:		Fixed an issue on FreeRTOS where thread stacks were being created too large
+FEATURE:	Added UC1601s driver
+FIX:		Fixed issues with the STM746-Discovery board with ChibiOS
 
 
 *** Release 2.7 ***

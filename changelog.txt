@@ -33,6 +33,7 @@ FEATURE:	Added GDISP_NEED_TEXT_BOXPADLR and GDISP_NEED_TEXT_BOXPADTB configurati
 FIX:		Fixed an issue on FreeRTOS where thread stacks were being created too large
 FEATURE:	Added UC1601s driver
 FIX:		Fixed issues with the STM746-Discovery board with ChibiOS
+FEATURE:	Added partial definition for the STM32F469i-Discovery board
 
 
 *** Release 2.7 ***

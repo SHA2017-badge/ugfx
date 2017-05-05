@@ -9,6 +9,10 @@
 
 #if GFX_USE_GDISP
 
+#define GDISP_DRIVER_VMT			GDISPVMT_STM32LTDC
+#include "gdisp_lld_config.h"
+#include "../../../src/gdisp/gdisp_driver.h"
+
 #if defined(GDISP_SCREEN_HEIGHT)
 	#warning "GDISP: This low level driver does not support setting a screen size. It is being ignored."
 	#undef GISP_SCREEN_HEIGHT
@@ -19,12 +23,11 @@
 #endif
 
 #ifndef LTDC_USE_DMA2D
- 	#define LTDC_USE_DMA2D FALSE
+ 	#define LTDC_USE_DMA2D 			FALSE
 #endif
-
-#define GDISP_DRIVER_VMT			GDISPVMT_STM32LTDC
-#include "gdisp_lld_config.h"
-#include "../../../src/gdisp/gdisp_driver.h"
+#ifndef LTDC_NO_CLOCK_INIT
+	#define LTDC_NO_CLOCK_INIT		FALSE
+#endif
 
 #include "stm32_ltdc.h"
 
@@ -156,12 +159,16 @@ static void _ltdc_init(void) {
 	RCC->APB2RSTR = 0;
 
 	// Enable the LTDC clock
-	#if defined(STM32F4) || defined(STM32F429_439xx) || defined(STM32F429xx)
-		RCC->DCKCFGR = (RCC->DCKCFGR & ~RCC_DCKCFGR_PLLSAIDIVR) | (1 << 16);
-	#elif defined(STM32F7) || defined(STM32F746xx)
-		RCC->DCKCFGR1 = (RCC->DCKCFGR1 & ~RCC_DCKCFGR1_PLLSAIDIVR) | (1 << 16);
-	#else
-		#error STM32LTDC driver not implemented for your platform
+	#if !LTDC_NO_CLOCK_INIT
+		#if defined(STM32F469xx)
+			RCC->DCKCFGR = (RCC->DCKCFGR & ~RCC_DCKCFGR_PLLSAIDIVR);
+		#elif defined(STM32F4) || defined(STM32F429_439xx) || defined(STM32F429xx)
+			RCC->DCKCFGR = (RCC->DCKCFGR & ~RCC_DCKCFGR_PLLSAIDIVR) | (1 << 16);
+		#elif defined(STM32F7) || defined(STM32F746xx)
+			RCC->DCKCFGR1 = (RCC->DCKCFGR1 & ~RCC_DCKCFGR1_PLLSAIDIVR) | (1 << 16);
+		#else
+			#error STM32LTDC driver not implemented for your platform
+		#endif
 	#endif
 
 	// Enable the peripheral

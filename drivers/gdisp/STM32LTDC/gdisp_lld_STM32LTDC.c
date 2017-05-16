@@ -60,7 +60,7 @@ typedef struct ltdcConfig {
 	coord_t		hsync, vsync;				// Horizontal and Vertical sync pixels
 	coord_t		hbackporch, vbackporch;		// Horizontal and Vertical back porch pixels
 	coord_t		hfrontporch, vfrontporch;	// Horizontal and Vertical front porch pixels
-	uint8_t		syncflags;					// Sync flags
+	uint32_t		syncflags;				// Sync flags
 	uint32_t	bgcolor;					// Clear screen color RGB888
 
 	ltdcLayerConfig	bglayer;				// Background layer config

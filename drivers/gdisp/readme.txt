@@ -11,12 +11,14 @@ ILI9341            - Mid-sized color LCD displays eg RGB565 320x240
 ILI9342            - Mid-sized color LCD displays eg RGB565 320x240
 ILI93xx            - Mid-sized color LCD displays eg RGB565 320x240 (attempt at a common driver)
 ILI9481            - Mid-sized color LCD displays eg RGB565 320x240
+KS0108             - Small monochrome LCD
 LGDP4532           - Mid-sized color LCD displays eg RGB565 320x240
 Nokia6610GE8       - Small (130x130) 12bit color LCD
 Nokia6610GE12      - Small (130x130) 12bit color LCD (untested)
 PCD8544            - Small monochrome LCD
 PCF8812            - Small monochrome LCD
 R61505U            - Mid-sized color LCD displays eg RGB565 320x240
+RA6963             - Small monochrom LCD
 RA8875             - Mid-sized color LCD displays eg RGB565 320x240
 S6D1121            - Mid-sized color LCD displays eg RGB565 320x240
 SPFD54124B         - Mid-sized color LCD displays eg RGB565 320x240

@@ -36,6 +36,7 @@ FIX:		Fixed issues with the STM746-Discovery board with ChibiOS
 FEATURE:	Added partial definition for the STM32F469i-Discovery board
 FIX:		Fixed issue where the variable type of the syncflags of the STM32LTDC driver was too small
 FEATURE:	Added KS0108 driver
+FEATURE:	Added RA6963 driver
 
 
 *** Release 2.7 ***

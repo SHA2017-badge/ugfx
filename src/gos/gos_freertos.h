@@ -83,6 +83,7 @@ extern "C" {
 #define gfxYield()					taskYIELD()
 #define gfxSystemTicks()			xTaskGetTickCount()
 #define gfxMillisecondsToTicks(ms)	((systemticks_t)((ms) / portTICK_PERIOD_MS))
+#define gfxTicksToMilliseconds(ticks)	(ticks * portTICK_PERIOD_MS)
 #define gfxSystemLock()				taskENTER_CRITICAL()
 #define gfxSystemUnlock()			taskEXIT_CRITICAL()
 

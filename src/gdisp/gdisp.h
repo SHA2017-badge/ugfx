@@ -909,7 +909,6 @@ void gdispGDrawBox(GDisplay *g, coord_t x, coord_t y, coord_t cx, coord_t cy, co
 /* Text Functions */
 
 #if GDISP_NEED_TEXT || defined(__DOXYGEN__)
-
 	/**
 	 * @brief   Draw a text character.
 	 * @pre		GDISP_NEED_TEXT must be TRUE in your gfxconf.h

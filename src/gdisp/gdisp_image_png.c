@@ -467,7 +467,7 @@ static bool_t PNG_zCopyInput(PNG_decode *d, unsigned length) {
 		WRAP_ZBUF(d->z.bufend);
 		if (d->z.bufend == d->z.bufpos) {		// Buffer full?
 			d->z.flags = (d->z.flags & ~PNG_ZFLG_RESUME_MASK) | PNG_ZFLG_RESUME_COPY;
-			((unsigned *)d->z.tmp)[0] = length;
+			(d->z.tmp)[0] = length;
 			return TRUE;
 		}
 	}
@@ -570,8 +570,8 @@ static bool_t PNG_zInflateBlock(PNG_decode *d) {
 			WRAP_ZBUF(offset);
 			if (d->z.bufend == d->z.bufpos) {								// Buffer full?
 				d->z.flags = (d->z.flags & ~PNG_ZFLG_RESUME_MASK) | PNG_ZFLG_RESUME_OFFSET;
-				((unsigned *)d->z.tmp)[0] = length;
-				((unsigned *)d->z.tmp)[1] = offset;
+				(d->z.tmp)[0] = length;
+				(d->z.tmp)[1] = offset;
 				return TRUE;
 			}
 		}
@@ -630,8 +630,8 @@ static bool_t PNG_zResumeOffset(PNG_decode *d, unsigned length, unsigned offset)
 		WRAP_ZBUF(offset);
 		if (d->z.bufend == d->z.bufpos) {						// Buffer full?
 			d->z.flags = (d->z.flags & ~PNG_ZFLG_RESUME_MASK) | PNG_ZFLG_RESUME_OFFSET;
-			((unsigned *)d->z.tmp)[0] = length;
-			((unsigned *)d->z.tmp)[1] = offset;
+			(d->z.tmp)[0] = length;
+			(d->z.tmp)[1] = offset;
 			return TRUE;
 		}
 	}
@@ -653,7 +653,7 @@ static uint8_t PNG_zGetByte(PNG_decode *d) {
 				return 0xFF;
 			break;
 		case PNG_ZFLG_RESUME_COPY:			// Resume uncompressed block copy for length bytes
-			if (!PNG_zCopyInput(d, ((unsigned *)d->z.tmp)[0]))
+			if (!PNG_zCopyInput(d, (d->z.tmp)[0]))
 				return 0xFF;
 			break;
 		case PNG_ZFLG_RESUME_INFLATE:		// Resume compressed block
@@ -661,7 +661,7 @@ static uint8_t PNG_zGetByte(PNG_decode *d) {
 				return 0xFF;
 			break;
 		case PNG_ZFLG_RESUME_OFFSET:		// Resume compressed block using offset copy for length bytes
-			if (!PNG_zResumeOffset(d, ((unsigned *)d->z.tmp)[0], ((unsigned *)d->z.tmp)[1]))
+			if (!PNG_zResumeOffset(d, (d->z.tmp)[0], (d->z.tmp)[1]))
 				return 0xFF;
 			break;
 		}

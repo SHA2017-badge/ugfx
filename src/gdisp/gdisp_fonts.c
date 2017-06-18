@@ -8,7 +8,6 @@
 #include "../../gfx.h"
 
 #if GFX_USE_GDISP && GDISP_NEED_TEXT
-
 #include "mcufont/mcufont.h"
 
 #define FONT_FLAG_DYNAMIC	0x80		// Custom flag to indicate dynamically allocated font
@@ -46,7 +45,7 @@ font_t gdispOpenFont(const char *name) {
 	const struct mf_font_list_s *fp;
 	
 	if (!fontList)
-		fontList = mf_get_font_list();
+		fontList = gdispListFonts();
 		
 	// Try the long names first
 	for(fp = fontList; fp; fp = fp->next) {
@@ -56,12 +55,13 @@ font_t gdispOpenFont(const char *name) {
 
 	// Try the short names if no long names match
 	for(fp = fontList; fp; fp = fp->next) {
-		if (matchfont(name, fp->font->short_name))
+		if (matchfont(name, fp->font->short_name)){
 			return fp->font;
+        }
 	}
 	
 	/* Return default builtin font.. better than nothing. */
-	return mf_get_font_list()->font;
+	return gdispListFonts()->font;
 }
 
 void gdispCloseFont(font_t font) {
@@ -100,12 +100,18 @@ bool_t gdispAddFont(font_t font) {
 		return FALSE;
 
 	if (!fontList)
-		fontList = mf_get_font_list();
+		fontList = gdispListFonts();
 	hdr->font = (const struct mf_font_s *)font;
 	hdr->next = fontList;
 	((struct mf_font_s *)font)->flags &= ~FONT_FLAG_UNLISTED;
 	fontList = hdr;
 	return TRUE;
+}
+
+const struct mf_font_list_s * gdispListFonts(void){
+	if (!fontList)
+		fontList = mf_get_font_list();
+    return fontList;
 }
 
 #endif /* GFX_USE_GDISP && GDISP_NEED_TEXT */

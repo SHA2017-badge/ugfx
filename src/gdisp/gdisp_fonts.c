@@ -46,7 +46,7 @@ font_t gdispOpenFont(const char *name) {
 	const struct mf_font_list_s *fp;
 	
 	if (!fontList)
-		fontList = mf_get_font_list();
+		fontList = gdispListFonts();
 		
 	// Try the long names first
 	for(fp = fontList; fp; fp = fp->next) {
@@ -61,7 +61,7 @@ font_t gdispOpenFont(const char *name) {
 	}
 	
 	/* Return default builtin font.. better than nothing. */
-	return mf_get_font_list()->font;
+	return gdispListFonts()->font;
 }
 
 void gdispCloseFont(font_t font) {
@@ -100,12 +100,18 @@ bool_t gdispAddFont(font_t font) {
 		return FALSE;
 
 	if (!fontList)
-		fontList = mf_get_font_list();
+		fontList = gdispListFonts();
 	hdr->font = (const struct mf_font_s *)font;
 	hdr->next = fontList;
 	((struct mf_font_s *)font)->flags &= ~FONT_FLAG_UNLISTED;
 	fontList = hdr;
 	return TRUE;
+}
+
+const struct mf_font_list_s * gdispListFonts(void){
+	if (!fontList)
+		fontList = mf_get_font_list();
+	return fontList;
 }
 
 #endif /* GFX_USE_GDISP && GDISP_NEED_TEXT */

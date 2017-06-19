@@ -77,6 +77,7 @@ static void encode_character_range(std::ostream &out,
             data.insert(data.end(), r.begin(), r.end());
         }
     }
+    offsets.push_back(data.size());
     
     write_const_table(out, data, "uint8_t", "mf_rlefont_" + name + "_glyph_data_" + std::to_string(range_index));
     write_const_table(out, offsets, "uint16_t", "mf_rlefont_" + name + "_glyph_offsets_" + std::to_string(range_index), 4);

@@ -493,24 +493,24 @@ void _gkeyboardDeinit(void) {
 }
 
 bool_t _gkeyboardInitDriver(GDriver *g, void *param, unsigned driverinstance, unsigned systeminstance) {
-    #define k   ((GKeyboard *)g)
+  #define k   ((GKeyboard *)g)
 	(void) param;
-    (void) systeminstance;
+  (void) systeminstance;
 
 	// The initial keyboard layout comes from the VMT
 	k->pLayout = gkvmt(k)->defLayout;
 
 	// Init the mouse
-    if (!gkvmt(k)->init((GKeyboard *)g, driverinstance))
-        return FALSE;
-
+  if (!gkvmt(k)->init((GKeyboard *)g, driverinstance)) {
+    return FALSE;
+	}
 	// Ensure the Poll timer is started
-	if (!gtimerIsActive(&KeyboardTimer))
+	if (!gtimerIsActive(&KeyboardTimer)) {
 		gtimerStart(&KeyboardTimer, KeyboardPoll, 0, TRUE, GINPUT_KEYBOARD_POLL_PERIOD);
+	}
+  return TRUE;
 
-    return TRUE;
-
-    #undef k
+  #undef k
 }
 
 void _gkeyboardPostInitDriver(GDriver *g) {

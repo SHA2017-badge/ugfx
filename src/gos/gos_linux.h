@@ -44,6 +44,7 @@ typedef pthread_mutex_t		gfxMutex;
 #define gfxRealloc(p,osz,nsz)			realloc(p, nsz)
 #define gfxFree(ptr)					free(ptr)
 #define gfxMillisecondsToTicks(ms)		(ms)
+#define gfxTicksToMilliseconds(ticks)	(ticks)
 #define gfxThreadMe()					pthread_self()
 #define gfxThreadClose(th)				(void)th
 #define gfxMutexInit(pmtx)				pthread_mutex_init(pmtx, 0)

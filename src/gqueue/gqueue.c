@@ -9,6 +9,8 @@
 
 #if GFX_USE_GQUEUE
 
+gfxSem sem = NULL;
+
 #if GQUEUE_NEED_BUFFERS
 	static gfxQueueGSync	bufferFreeList;
 #endif
@@ -36,9 +38,9 @@ void _gqueueDeinit(void)
 		if (!pqueue->head)
 			return 0;
 
-		gfxSystemLock();
+		gfxSystemLock(sem);
 		pi = gfxQueueASyncGetI(pqueue);
-		gfxSystemUnlock();
+		gfxSystemUnlock(sem);
 
 		return pi;
 	}
@@ -54,9 +56,9 @@ void _gqueueDeinit(void)
 	}
 
 	void gfxQueueASyncPut(gfxQueueASync *pqueue, gfxQueueASyncItem *pitem) {
-		gfxSystemLock();
+		gfxSystemLock(sem);
 		gfxQueueASyncPutI(pqueue, pitem);
-		gfxSystemUnlock();
+		gfxSystemUnlock(sem);
 	}
 	void gfxQueueASyncPutI(gfxQueueASync *pqueue, gfxQueueASyncItem *pitem) {
 		if (!pitem) return;				// Safety
@@ -70,9 +72,9 @@ void _gqueueDeinit(void)
 	}
 
 	void gfxQueueASyncPush(gfxQueueASync *pqueue, gfxQueueASyncItem *pitem) {
-		gfxSystemLock();
+		gfxSystemLock(sem);
 		gfxQueueASyncPushI(pqueue, pitem);
-		gfxSystemUnlock();
+		gfxSystemUnlock(sem);
 	}
 	void gfxQueueASyncPushI(gfxQueueASync *pqueue, gfxQueueASyncItem *pitem) {
 		if (!pitem) return;				// Safety
@@ -83,9 +85,9 @@ void _gqueueDeinit(void)
 	}
 
 	void gfxQueueASyncInsert(gfxQueueASync *pqueue, gfxQueueASyncItem *pitem, gfxQueueASyncItem *pafter) {
-		gfxSystemLock();
+		gfxSystemLock(sem);
 		gfxQueueASyncInsertI(pqueue, pitem, pafter);
-		gfxSystemUnlock();
+		gfxSystemUnlock(sem);
 	}
 	void gfxQueueASyncInsertI(gfxQueueASync *pqueue, gfxQueueASyncItem *pitem, gfxQueueASyncItem *pafter) {
 		if (!pitem) return;				// Safety
@@ -107,9 +109,9 @@ void _gqueueDeinit(void)
 	}
 
 	void gfxQueueASyncRemove(gfxQueueASync *pqueue, gfxQueueASyncItem *pitem) {
-		gfxSystemLock();
+		gfxSystemLock(sem);
 		gfxQueueASyncRemoveI(pqueue, pitem);
-		gfxSystemUnlock();
+		gfxSystemUnlock(sem);
 	}
 	void gfxQueueASyncRemoveI(gfxQueueASync *pqueue, gfxQueueASyncItem *pitem) {
 		gfxQueueASyncItem *pi;
@@ -136,9 +138,9 @@ void _gqueueDeinit(void)
 	bool_t gfxQueueASyncIsIn(gfxQueueASync *pqueue, const gfxQueueASyncItem *pitem) {
 		bool_t	res;
 
-		gfxSystemLock();
+		gfxSystemLock(sem);
 		res = gfxQueueASyncIsInI(pqueue, pitem);
-		gfxSystemUnlock();
+		gfxSystemUnlock(sem);
 
 		return res;
 	}
@@ -169,11 +171,11 @@ void _gqueueDeinit(void)
 		if (!gfxSemWait(&pqueue->sem, ms))
 			return 0;
 
-		gfxSystemLock();
+		gfxSystemLock(sem);
 		pi = pqueue->head;
 		pqueue->head = pi->next;
 		pi->next = 0;
-		gfxSystemUnlock();
+		gfxSystemUnlock(sem);
 
 		return pi;
 	}
@@ -190,9 +192,9 @@ void _gqueueDeinit(void)
 	}
 
 	void gfxQueueGSyncPut(gfxQueueGSync *pqueue, gfxQueueGSyncItem *pitem) {
-		gfxSystemLock();
+		gfxSystemLock(sem);
 		gfxQueueGSyncPutI(pqueue, pitem);
-		gfxSystemUnlock();
+		gfxSystemUnlock(sem);
 	}
 	void gfxQueueGSyncPutI(gfxQueueGSync *pqueue, gfxQueueGSyncItem *pitem) {
 		if (!pitem) return;				// Safety
@@ -207,9 +209,9 @@ void _gqueueDeinit(void)
 	}
 
 	void gfxQueueGSyncPush(gfxQueueGSync *pqueue, gfxQueueGSyncItem *pitem) {
-		gfxSystemLock();
+		gfxSystemLock(sem);
 		gfxQueueGSyncPushI(pqueue, pitem);
-		gfxSystemUnlock();
+		gfxSystemUnlock(sem);
 	}
 	void gfxQueueGSyncPushI(gfxQueueGSync *pqueue, gfxQueueGSyncItem *pitem) {
 		if (!pitem) return;				// Safety
@@ -221,9 +223,9 @@ void _gqueueDeinit(void)
 	}
 
 	void gfxQueueGSyncInsert(gfxQueueGSync *pqueue, gfxQueueGSyncItem *pitem, gfxQueueASyncItem *pafter) {
-		gfxSystemLock();
+		gfxSystemLock(sem);
 		gfxQueueGSyncInsertI(pqueue, pitem, pafter);
-		gfxSystemUnlock();
+		gfxSystemUnlock(sem);
 	}
 	void gfxQueueGSyncInsertI(gfxQueueGSync *pqueue, gfxQueueGSyncItem *pitem, gfxQueueASyncItem *pafter) {
 		if (!pitem) return;				// Safety
@@ -245,9 +247,9 @@ void _gqueueDeinit(void)
 	}
 
 	void gfxQueueGSyncRemove(gfxQueueGSync *pqueue, gfxQueueGSyncItem *pitem) {
-		gfxSystemLock();
+		gfxSystemLock(sem);
 		gfxQueueGSyncRemoveI(pqueue, pitem);
-		gfxSystemUnlock();
+		gfxSystemUnlock(sem);
 	}
 	void gfxQueueGSyncRemoveI(gfxQueueGSync *pqueue, gfxQueueGSyncItem *pitem) {
 		gfxQueueGSyncItem *pi;
@@ -274,9 +276,9 @@ void _gqueueDeinit(void)
 	bool_t gfxQueueGSyncIsIn(gfxQueueGSync *pqueue, const gfxQueueGSyncItem *pitem) {
 		bool_t		res;
 
-		gfxSystemLock();
+		gfxSystemLock(sem);
 		res = gfxQueueGSyncIsInI(pqueue, pitem);
-		gfxSystemUnlock();
+		gfxSystemUnlock(sem);
 
 		return res;
 	}
@@ -308,11 +310,11 @@ void _gqueueDeinit(void)
 		if (!gfxSemWait(&pqueue->sem, ms))
 			return 0;
 
-		gfxSystemLock();
+		gfxSystemLock(sem);
 		pi = pqueue->head;
 		pqueue->head = pi->next;
 		pi->next = 0;
-		gfxSystemUnlock();
+		gfxSystemUnlock(sem);
 
 		gfxSemSignal(&pi->sem);
 		gfxSemDestroy(&pi->sem);
@@ -325,14 +327,14 @@ void _gqueueDeinit(void)
 		gfxSemInit(&pitem->sem, 0, 1);
 		pitem->next = 0;
 
-		gfxSystemLock();
+		gfxSystemLock(sem);
 		if (!pqueue->head) {
 			pqueue->head = pqueue->tail = pitem;
 		} else {
 			pqueue->tail->next = pitem;
 			pqueue->tail = pitem;
 		}
-		gfxSystemUnlock();
+		gfxSystemUnlock(sem);
 
 		gfxSemSignal(&pqueue->sem);
 
@@ -343,12 +345,12 @@ void _gqueueDeinit(void)
 		if (!pitem) return;				// Safety
 		gfxSemInit(&pitem->sem, 0, 1);
 
-		gfxSystemLock();
+		gfxSystemLock(sem);
 		pitem->next = pqueue->head;
 		pqueue->head = pitem;
 		if (!pitem->next)
 			pqueue->tail = pitem;
-		gfxSystemUnlock();
+		gfxSystemUnlock(sem);
 
 		gfxSemSignal(&pqueue->sem);
 
@@ -359,7 +361,7 @@ void _gqueueDeinit(void)
 		if (!pitem) return;				// Safety
 		gfxSemInit(&pitem->sem, 0, 1);
 
-		gfxSystemLock();
+		gfxSystemLock(sem);
 		if (pafter && gfxQueueGSyncIsInI(pqueue, pafter)) {
 			pitem->next = pafter->next;
 			pafter->next = pitem;
@@ -374,7 +376,7 @@ void _gqueueDeinit(void)
 				pqueue->tail = pitem;
 			}
 		}
-		gfxSystemUnlock();
+		gfxSystemUnlock(sem);
 
 		gfxSemSignal(&pqueue->sem);
 
@@ -386,13 +388,13 @@ void _gqueueDeinit(void)
 		gfxQueueFSyncItem *pi;
 
 		if (!pitem) return;				// Safety
-		gfxSystemLock();
+		gfxSystemLock(sem);
 		if (pqueue->head) {
 			if (pqueue->head == pitem) {
 				pqueue->head = pitem->next;
 			found:
 				pitem->next = 0;
-				gfxSystemUnlock();
+				gfxSystemUnlock(sem);
 				gfxSemSignal(&pitem->sem);
 				gfxSemDestroy(&pitem->sem);
 				return;
@@ -406,15 +408,15 @@ void _gqueueDeinit(void)
 				}
 			}
 		}
-		gfxSystemUnlock();
+		gfxSystemUnlock(sem);
 	}
 
 	bool_t gfxQueueFSyncIsIn(gfxQueueFSync *pqueue, const gfxQueueFSyncItem *pitem) {
 		bool_t	res;
 
-		gfxSystemLock();
+		gfxSystemLock(sem);
 		res = gfxQueueFSyncIsInI(pqueue, pitem);
-		gfxSystemUnlock();
+		gfxSystemUnlock(sem);
 
 		return res;
 	}

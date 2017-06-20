@@ -422,17 +422,17 @@ void gwinKeyboardDraw_Normal(GWidgetObject *gw, void *param) {
 			// Get the correct color set
 			if (!(gk->w.g.flags & GWIN_FLG_SYSENABLED))
 					pcol = &gk->w.pstyle->disabled;
-			else 
+			else
 				pcol = &gk->w.pstyle->enabled;
-        	 
+
 			// Get the key
 			key = UTF8CharAt(krow, col);
-	
+
 			// Fuse identical keys into one big key
 			kcols = col+1;
 			while (UTF8CharAt(krow, kcols) == key)
 				kcols++;
-        	 
+
 			// If quick update needed and keyboard already drawn (if not use this flag, then bug when screen touched before keyboard was drawn)
 			if ( (gk->w.g.flags & GKEYBOARD_FLG_QUICKUPDATE) && !(gk->w.g.flags & GWIN_FLG_BGREDRAW) )  {
 
@@ -441,7 +441,7 @@ void gwinKeyboardDraw_Normal(GWidgetObject *gw, void *param) {
 
 					// And previous key have
 					if ( (gk->lastkeyrow != GKEY_BAD_ROWCOL) && (gk->lastkeycol != GKEY_BAD_ROWCOL) ) {
-						
+
 						if (gk->lastkeyrow == row && gk->lastkeycol == col) {
 							// If keyboard has no "disabled" color
 							if (pcol != &gk->w.pstyle->disabled)
@@ -478,7 +478,7 @@ void gwinKeyboardDraw_Normal(GWidgetObject *gw, void *param) {
 					}
 					else continue;
 				}
-			}                  
+			}
 			else
 			{
 				gk->lastkeyrow = gk->lastkeycol = GKEY_BAD_ROWCOL;
@@ -486,21 +486,21 @@ void gwinKeyboardDraw_Normal(GWidgetObject *gw, void *param) {
 
 			x = NONFIXED(fx * col + FIXED0_5);
 			cx = NONFIXED(fx * kcols + FIXED0_5) - x;
-			
+
 			if (key < 0x20) {
 				pcap = gk->keytable->skeys[key-1].keycap;
 			} else {
 				cap[UCode2UTF8((utf8 *)cap, key)] = 0;
 				pcap = cap;
 			}
-			
+
 			switch(*pcap) {
 
 			case  '\001':	// Shift (up-arrow)
 				gdispGFillArea(gw->g.display, gw->g.x+x, gw->g.y+y, cx, cy, pcol->fill);
 
 				gdispGDrawLine(gw->g.display, gw->g.x+x    +cx/4, gw->g.y+y+cy/2, gw->g.x+x+cx/2, gw->g.y+y +cy/4, pcol->text);               /*    / \    */
-				gdispGDrawLine(gw->g.display, gw->g.x+x+cx -cx/4, gw->g.y+y+cy/2, gw->g.x+x+cx/2, gw->g.y+y +cy/4, pcol->text); 
+				gdispGDrawLine(gw->g.display, gw->g.x+x+cx -cx/4, gw->g.y+y+cy/2, gw->g.x+x+cx/2, gw->g.y+y +cy/4, pcol->text);
 				gdispGDrawLine(gw->g.display, gw->g.x+x    +cx/4, gw->g.y+y+cy/2, gw->g.x+x+cx/2-cx/6, gw->g.y+y+cy/2, pcol->text);           /*    _ _    */
 				gdispGDrawLine(gw->g.display, gw->g.x+x+cx -cx/4, gw->g.y+y+cy/2, gw->g.x+x+cx/2+cx/6, gw->g.y+y+cy/2, pcol->text);
 				gdispGDrawLine(gw->g.display, gw->g.x+x+cx/2-cx/6, gw->g.y+y+cy/2, gw->g.x+x+cx/2-cx/6, gw->g.y+y+cy -cy/3, pcol->text);      /*    ||     */
@@ -513,7 +513,7 @@ void gwinKeyboardDraw_Normal(GWidgetObject *gw, void *param) {
 				gdispGFillArea(gw->g.display, gw->g.x+x, gw->g.y+y, cx, cy, pcol->fill);
 
 				gdispGDrawLine(gw->g.display, gw->g.x+x    +cx/4, gw->g.y+y+cy/2, gw->g.x+x+cx/2, gw->g.y+y +cy/4, pcol->text);               /*   / \     */
-				gdispGDrawLine(gw->g.display, gw->g.x+x+cx -cx/4, gw->g.y+y+cy/2, gw->g.x+x+cx/2, gw->g.y+y +cy/4, pcol->text);    
+				gdispGDrawLine(gw->g.display, gw->g.x+x+cx -cx/4, gw->g.y+y+cy/2, gw->g.x+x+cx/2, gw->g.y+y +cy/4, pcol->text);
 				gdispGDrawLine(gw->g.display, gw->g.x+x    +cx/4, gw->g.y+y+cy/2, gw->g.x+x+cx/2-cx/6, gw->g.y+y+cy/2, pcol->text);           /*   _ _     */
 				gdispGDrawLine(gw->g.display, gw->g.x+x+cx -cx/4, gw->g.y+y+cy/2, gw->g.x+x+cx/2+cx/6, gw->g.y+y+cy/2, pcol->text);
 				gdispGDrawLine(gw->g.display, gw->g.x+x+cx/2-cx/6, gw->g.y+y+cy/2, gw->g.x+x+cx/2-cx/6, gw->g.y+y+cy -cy/3, pcol->text);      /*    ||     */
@@ -553,13 +553,13 @@ void gwinKeyboardDraw_Normal(GWidgetObject *gw, void *param) {
 
 			default:   // Regular character
 				gdispGFillStringBox(gw->g.display, gw->g.x+x, gw->g.y+y, cx, cy, pcap, gw->g.font, pcol->text, pcol->fill, justifyCenter);
-				
+
 				break;
 			}
-			
+
 			// Draw the frame (border around the entire widget)
 			gdispGDrawBox(gw->g.display, gw->g.x+x, gw->g.y+y, cx, cy, pcol->edge);
-			
+
 			// If key up and we already cleared the previous key
 			if ( (gk->keyrow == GKEY_BAD_ROWCOL) && (gk->keycol == GKEY_BAD_ROWCOL) && (gk->lastkeyrow == row) && (gk->lastkeycol == col) ) {
 			   gk->lastkeyrow = gk->lastkeycol = GKEY_BAD_ROWCOL;
@@ -575,6 +575,27 @@ void gwinKeyboardDraw_Normal(GWidgetObject *gw, void *param) {
 
 	#undef gk
 }
+
+uint8_t gwinKeyboardGetSelected(GHandle gh, uint8_t *utf8_str){
+	#define gk		((GKeyboardObject *)gh)
+	uint8_t             len;
+	const GVSpecialKey	*skey;
+	unsigned			i;
+	const utf8 *krow = (const utf8 *)gk->keyset[gk->keyrow];
+	gk->key = UTF8CharAt(krow, gk->keycol);
+	if (gk->key < 0x20) {
+		skey = &gk->keytable->skeys[gk->key-1];
+		for(i=0; skey->sendkey[i]; i++)
+			utf8_str[i] = skey->sendkey[i];
+	} else
+		i = UCode2UTF8((utf8 *)utf8_str, gk->key);
+	len = i;
+	for(; i < 4; i++)
+		utf8_str[i] = 0;
+
+	return len;
+}
+#undef gk
 
 #if !(GFX_USE_GINPUT && GINPUT_NEED_KEYBOARD)
 	GSourceHandle ginputGetKeyboard(unsigned instance) {

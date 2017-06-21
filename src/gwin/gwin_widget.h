@@ -356,6 +356,20 @@ bool_t gwinAttachListener(GListener *pl);
 	 * @api
 	 */
 	bool_t gwinAttachToggle(GHandle gh, uint16_t role, uint16_t instance);
+	/**
+	 * @brief	Detach a toggle from a widget
+	 * @return	TRUE on success
+	 *
+	 * @param[in] gh		The widget handle
+	 * @param[in] role		The function the toggle will perform for the widget
+	 *
+	 * @note		See the documentation on the specific widget to see the possible
+	 * 				values for the role parameter. If it is out of range, this function
+	 * 				will return FALSE
+	 *
+	 * @api
+	 */
+	bool_t gwinDetachToggle(GHandle gh, uint16_t role);
 #endif
 
 #if (GFX_USE_GINPUT && GINPUT_NEED_DIAL) || defined(__DOXYGEN__)

@@ -99,7 +99,6 @@ static void gwidgetEvent(void *param, GEvent *pe) {
 	#define pte		((GEventToggle *)pe)
 	#define pde		((GEventDial *)pe)
 
-	GHandle				h;
 	GHandle				gh;
 	#if GFX_USE_GINPUT && (GINPUT_NEED_TOGGLE || GINPUT_NEED_DIAL)
 		uint16_t		role;

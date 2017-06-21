@@ -1117,6 +1117,15 @@ void gdispGDrawBox(GDisplay *g, coord_t x, coord_t y, coord_t cx, coord_t cy, co
 	 * @api
 	 */
 	bool_t gdispAddFont(font_t font);
+
+	/**
+	 * @brief	Returns a linked list of loaded fonts.
+	 * @returns	A pointer to the first element of the list of mcufont structures.
+	 * @pre		GDISP_NEED_TEXT must be TRUE in your gfxconf.h
+	 *
+	 * @api
+	 */
+	const struct mf_font_list_s * gdispListFonts(void);
 #endif
 
 /* Extra Arc Functions */

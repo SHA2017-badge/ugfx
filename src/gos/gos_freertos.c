@@ -30,6 +30,8 @@
 	#error "GOS: Either GFX_OS_NO_INIT or GFX_OS_CALL_UGFXMAIN must be defined for FreeRTOS"
 #endif
 
+PRIVILEGED_DATA static portMUX_TYPE lockMux = portMUX_INITIALIZER_UNLOCKED;
+
 void _gosInit(void)
 {
 	#if GFX_OS_NO_INIT && !GFX_OS_INIT_NO_WARNING

@@ -18,7 +18,7 @@
 #define _GDISP_IMAGE_SUPPORT_H
 
 /* Base endian handling routines */
-#define gdispImageGetVar(type, p, idx)				(*(type *)(((uint8_t *)(p))+(idx)))
+#define gdispImageGetVar(type, p, idx)              (*(type*) ((intptr_t) p + idx))
 #define gdispImageGetByte(type, p, idx, shift)		(((type)gdispImageGetVar(uint8_t, p, idx))<<(shift))
 #define gdispImageSwap16(w)							((((uint16_t)(w))>>8)|(((uint16_t)(w))<<8))
 #define gdispImageSwap32(dw)						((((uint32_t)(w))>>24)|((((uint32_t)(w))&0x00FF0000)>>8)\

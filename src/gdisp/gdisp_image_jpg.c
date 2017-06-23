@@ -143,9 +143,11 @@ gdispImageError gdispImageCache_JPG(gdispImage *img){
     int r;
     JDEC decoder;
     if((r = jd_prepare(&decoder, infunc, work, WORKSZ, (void *)img))){
+        gdispImageFree(img, (void*) work, WORKSZ);
         return decode_errors[r];
     }
     if((r = jd_decomp(&decoder, outfunc, 0))){
+        gdispImageFree(img, (void*) work, WORKSZ);
         return decode_errors[r];
     }
 

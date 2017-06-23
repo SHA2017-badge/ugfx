@@ -93,7 +93,6 @@ static UINT infunc(JDEC *decoder, BYTE *buf, UINT len)
 static UINT outfunc(JDEC *decoder, void *bitmap, JRECT *rect)
 {
     unsigned char *in = (unsigned char *)bitmap;
-    unsigned char *out;
     int y;
 	gdispImage * img = (gdispImage *)decoder->device;
 	gdispImagePrivate_JPG *	priv = (gdispImagePrivate_JPG *)img->priv;

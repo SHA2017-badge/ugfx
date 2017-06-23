@@ -16,7 +16,8 @@
 
 typedef struct gdispImagePrivate_JPG {
     size_t      file_size;
-	size_t		frame0pos;
+	size_t		in_pos;
+	size_t		out_pos;
 	pixel_t		*frame0cache;
     size_t      pixbuf_size;
     size_t      decode_size;
@@ -38,13 +39,6 @@ gdispImageError gdispImageOpen_JPG(gdispImage *img){
 	/* We know we are a JPG format image */
 	img->flags = 0;
 
-	/* Allocate our private area */
-	if (!(img->priv = gdispImageAlloc(img, sizeof(gdispImagePrivate_JPG))))
-		return GDISP_IMAGE_ERR_NOMEMORY;
-
-	/* Initialise the essential bits in the private area */
-	priv = (gdispImagePrivate_JPG *)img->priv;
-
     /* Process Start of frame segments */
     while(!gfileEOF(img->f)){
         hdr[0] = hdr[1];
@@ -62,13 +56,19 @@ gdispImageError gdispImageOpen_JPG(gdispImage *img){
 
 header_found:
 
+	/* Allocate our private area */
+	if (!(img->priv = gdispImageAlloc(img, sizeof(gdispImagePrivate_JPG))))
+		return GDISP_IMAGE_ERR_NOMEMORY;
+
+	/* Initialise the essential bits in the private area */
+	priv = (gdispImagePrivate_JPG *)img->priv;
     priv->file_size   = gfileGetSize(img->f);
     priv->pixbuf_size = img->width * img->height * sizeof(pixel_t);
     priv->decode_size = img->width * img->height * 3;
+    priv->frame0cache = 0;
 
 	img->type = GDISP_IMAGE_TYPE_JPG;
 
-    priv->frame0cache = 0;
 	return GDISP_IMAGE_ERR_OK;
 }
 
@@ -82,22 +82,15 @@ void gdispImageClose_JPG(gdispImage *img){
     }
 }
 
-typedef struct {
-    unsigned char *inData;
-    int inPos;
-    unsigned char *outData;
-    int outW;
-    int outH;
-} JpegDev;
-
 static UINT infunc(JDEC *decoder, BYTE *buf, UINT len)
 {
-    JpegDev *jd = (JpegDev *)decoder->device;
-    /*printf("Reading %d bytes from pos %d\n", len, jd->inPos);*/
-    if (buf != NULL) {
-        memcpy(buf, jd->inData + jd->inPos, len);
+	gdispImage * img = (gdispImage *)decoder->device;
+	gdispImagePrivate_JPG *	priv = (gdispImagePrivate_JPG *)img->priv;
+    if(buf){
+        gfileSetPos(img->f, priv->in_pos);
+        gfileRead(img->f, buf, len);
     }
-    jd->inPos += len;
+    priv->in_pos += len;
     return len;
 }
 
@@ -106,12 +99,15 @@ static UINT outfunc(JDEC *decoder, void *bitmap, JRECT *rect)
     unsigned char *in = (unsigned char *)bitmap;
     unsigned char *out;
     int y;
-    /*printf("Rect %d,%d - %d,%d\n", rect->top, rect->left, rect->bottom, rect->right);*/
-    JpegDev *jd = (JpegDev *)decoder->device;
+	gdispImage * img = (gdispImage *)decoder->device;
+	gdispImagePrivate_JPG *	priv = (gdispImagePrivate_JPG *)img->priv;
     for (y = rect->top; y <= rect->bottom; y++) {
-        out = jd->outData + ((jd->outW * y) + rect->left) * 3;
-        memcpy(out, in, ((rect->right - rect->left) + 1) * 3);
-        in += ((rect->right - rect->left) + 1) * 3;
+        priv->out_pos = ((img->width * y) + rect->left);
+        size_t pixels = ((rect->right - rect->left) + 1);
+        for(size_t pixel = 0; pixel < pixels; pixel++){
+            priv->frame0cache[priv->out_pos+pixel] = RGB2COLOR(in[0], in[1], in[2]);
+            in += 3;
+        }
     }
     return 1;
 }
@@ -129,32 +125,15 @@ gdispImageError gdispImageCache_JPG(gdispImage *img){
 	if (!priv->frame0cache)
 		return GDISP_IMAGE_ERR_NOMEMORY;
 
-    JDEC decoder;
-    JpegDev jd;
-    int r;
-    int mx, my;
-    unsigned char *decoded = gdispImageAlloc(img, priv->decode_size);
-    if(!decoded){
-        return GDISP_IMAGE_ERR_NOMEMORY;
-    }
     char *work = gdispImageAlloc(img, WORKSZ);
     if(!work){
         return GDISP_IMAGE_ERR_NOMEMORY;
     }
     memset(work, 0, WORKSZ);
 
-    jd.inPos = 0;
-    jd.outData = decoded;
-    jd.outW = img->width;
-    jd.outH = img->height;
-    jd.inData = gdispImageAlloc(img, priv->file_size);
-    if(!jd.inData){
-        return GDISP_IMAGE_ERR_NOMEMORY;
-    }
-
+    priv->in_pos = 0;
+    priv->out_pos = 0;
     gfileSetPos(img->f, 0);
-    gfileRead(img->f, jd.inData, priv->file_size);
-    /*printf("Read %u bytes\n", priv->file_size);*/
 
     gdispImageError decode_errors[9] = {GDISP_IMAGE_ERR_OK,          /* 0 : JDR_OK */
                                         GDISP_IMAGE_ERR_BADDATA,     /* 1 : JDR_INTR */
@@ -167,34 +146,16 @@ gdispImageError gdispImageCache_JPG(gdispImage *img){
                                         GDISP_IMAGE_ERR_BADFORMAT,   /* 8 : JDR_FMT3 */
                                        };
 
-    if((r = jd_prepare(&decoder, infunc, work, WORKSZ, (void *)&jd))){
+    int r;
+    JDEC decoder;
+    if((r = jd_prepare(&decoder, infunc, work, WORKSZ, (void *)img))){
         return decode_errors[r];
     }
     if((r = jd_decomp(&decoder, outfunc, 0))){
         return decode_errors[r];
     }
 
-    unsigned char *p = decoded + 2;
-    priv->frame0pos = 0;
-    for (my = 0; my < img->height; my++) {
-        for (mx = 0; mx < img->width; mx++) {
-            // BW only
-            /*if(*p > 100){*/
-            /*priv->frame0cache[priv->frame0pos] = White;*/
-            /*} else {*/
-            /*priv->frame0cache[priv->frame0pos] = Black;*/
-            /*}*/
-            // RGB
-            priv->frame0cache[priv->frame0pos] = RGB2COLOR(((uint8_t *)p)[0], ((uint8_t *)p)[1], ((uint8_t *)p)[2]);
-
-            p += 3;
-            priv->frame0pos++;
-        }
-    }
-
     gdispImageFree(img, (void*) work, WORKSZ);
-    gdispImageFree(img, (void*) decoded, priv->decode_size);
-    gdispImageFree(img, (void*) jd.inData, priv->file_size);
 
 	return GDISP_IMAGE_ERR_OK;
 }

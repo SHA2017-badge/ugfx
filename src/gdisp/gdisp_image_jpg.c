@@ -15,12 +15,10 @@
 #define WORKSZ 3100
 
 typedef struct gdispImagePrivate_JPG {
-    size_t      file_size;
 	size_t		in_pos;
 	size_t		out_pos;
 	pixel_t		*frame0cache;
     size_t      pixbuf_size;
-    size_t      decode_size;
 	} gdispImagePrivate_JPG;
 
 gdispImageError gdispImageOpen_JPG(gdispImage *img){
@@ -62,9 +60,7 @@ header_found:
 
 	/* Initialise the essential bits in the private area */
 	priv = (gdispImagePrivate_JPG *)img->priv;
-    priv->file_size   = gfileGetSize(img->f);
     priv->pixbuf_size = img->width * img->height * sizeof(pixel_t);
-    priv->decode_size = img->width * img->height * 3;
     priv->frame0cache = 0;
 
 	img->type = GDISP_IMAGE_TYPE_JPG;
@@ -103,8 +99,7 @@ static UINT outfunc(JDEC *decoder, void *bitmap, JRECT *rect)
 	gdispImagePrivate_JPG *	priv = (gdispImagePrivate_JPG *)img->priv;
     for (y = rect->top; y <= rect->bottom; y++) {
         priv->out_pos = ((img->width * y) + rect->left);
-        size_t pixels = ((rect->right - rect->left) + 1);
-        for(size_t pixel = 0; pixel < pixels; pixel++){
+        for(size_t pixel = 0; pixel < ((rect->right - rect->left) + 1); pixel++){
             priv->frame0cache[priv->out_pos+pixel] = RGB2COLOR(in[0], in[1], in[2]);
             in += 3;
         }

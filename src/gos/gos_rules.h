@@ -32,7 +32,11 @@
 	#if GFX_USE_OS_WIN32 || GFX_USE_OS_LINUX || GFX_USE_OS_OSX || GFX_USE_OS_ECOS || \
 			(GFX_OS_HEAP_SIZE == 0 && (GFX_USE_OS_RAW32 || GFX_USE_OS_ARDUINO || GFX_USE_OS_CMSIS || GFX_USE_OS_KEIL))
 		#if GFX_DISPLAY_RULE_WARNINGS
-			#warning "GOS: Cannot emulate malloc as gfxAlloc() internally uses malloc on this platform"
+			#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+				#warning "GOS: Cannot emulate malloc as gfxAlloc() internally uses malloc on this platform"
+			#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+				COMPILER_WARNING("GOS: Cannot emulate malloc as gfxAlloc() internally uses malloc on this platform")
+			#endif
 		#endif
 		#undef GFX_EMULATE_MALLOC
 		#define GFX_EMULATE_MALLOC	FALSE

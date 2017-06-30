@@ -887,7 +887,7 @@ LLDSPEC bool_t gdisp_lld_init(GDisplay *g) {
 	#endif
 
 	sprintf(buf, APP_NAME " - %u", g->systemdisplay+1);
-	SetWindowText(priv->hwnd, buf);
+	SetWindowTextA(priv->hwnd, buf);
 	ShowWindow(priv->hwnd, SW_SHOW);
 	UpdateWindow(priv->hwnd);
 

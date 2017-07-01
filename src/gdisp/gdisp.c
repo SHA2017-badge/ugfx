@@ -179,6 +179,12 @@ static GFXINLINE void fillarea(GDisplay *g) {
 			if (gvmt(g)->fill)
 		#endif
 		{
+			#if GDISP_HARDWARE_STREAM_POS && GDISP_HARDWARE_STREAM_WRITE
+				if ((g->flags & GDISP_FLG_SCRSTREAM)) {
+					gdisp_lld_write_stop(g);
+					g->flags &= ~GDISP_FLG_SCRSTREAM;
+				}
+			#endif
 			gdisp_lld_fill_area(g);
 			return;
 		}
@@ -363,6 +369,12 @@ static void vline_clip(GDisplay *g) {
 			if (gvmt(g)->fill)
 		#endif
 		{
+			#if GDISP_HARDWARE_STREAM_POS && GDISP_HARDWARE_STREAM_WRITE
+				if ((g->flags & GDISP_FLG_SCRSTREAM)) {
+					gdisp_lld_write_stop(g);
+					g->flags &= ~GDISP_FLG_SCRSTREAM;
+				}
+			#endif
 			g->p.cy = g->p.y1 - g->p.y + 1;
 			g->p.cx = 1;
 			gdisp_lld_fill_area(g);

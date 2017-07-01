@@ -15,21 +15,18 @@
 #include "UC8173.h"
 #include "board_UC8173.h"
 
-#if defined(GDISP_SCREEN_WIDTH)
-	#warning "GDISP: This low level driver does not support setting a screen size. It is being ignored."
-	#define GDISP_SCREEN_WIDTH		240
-#endif
-#if defined(GDISP_SCREEN_HEIGHT)
-	#warning "GDISP: This low level driver does not support setting a screen size. It is being ignored."
-	#define GDISP_SCREEN_HEIGHT		240
+#if defined(GDISP_SCREEN_HEIGHT) || defined(GDISP_SCREEN_HEIGHT)
+	#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+		#warning "GDISP: This low level driver does not support setting a screen size. It is being ignored."
+	#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+		COMPILER_WARNING("GDISP: This low level driver does not support setting a screen size. It is being ignored.")
+	#endif
+	#undef GDISP_SCREEN_WIDTH
+	#undef GDISP_SCREEN_HEIGHT
 #endif
 
-#ifndef GDISP_SCREEN_HEIGHT
-	#define GDISP_SCREEN_HEIGHT		240
-#endif
-#ifndef GDISP_SCREEN_WIDTH
-	#define GDISP_SCREEN_WIDTH		240
-#endif
+#define GDISP_SCREEN_HEIGHT		240
+#define GDISP_SCREEN_WIDTH		240
 
 #define PRIV(g)						((UC8173_Private*)((g)->priv))
 #define FRAMEBUFFER(g)				((uint8_t *)(PRIV(g)+1))
@@ -354,7 +351,7 @@ LLDSPEC bool_t gdisp_lld_init(GDisplay* g)
 		*p &=~ xybit(x, LLDCOLOR_MASK());
 		*p |= xybit(x, gdispColor2Native(g->p.color));
 
-//#warning ToDo
+// ToDo
 // There appears to be an issue in the silicone, still talking to the manufacturer about this one. Update will follow!
 #if 0
 		// Update the flush window region

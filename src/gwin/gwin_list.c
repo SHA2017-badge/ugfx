@@ -747,7 +747,11 @@ void gwinListDefaultDraw(GWidgetObject* gw, void* param) {
 			gdispGFillConvexPoly(gw->g.display, gw->g.x+iwidth+((LST_SCROLLWIDTH-LST_ARROW_SZ)/2+2), gw->g.y+(LST_ARROW_SZ/2+1), upArrow, 3, ps->fill);
 			gdispGFillConvexPoly(gw->g.display, gw->g.x+iwidth+((LST_SCROLLWIDTH-LST_ARROW_SZ)/2+2), gw->g.y+gw->g.height-(LST_ARROW_SZ+LST_ARROW_SZ/2+1), downArrow, 3, ps->fill);
 		#else
-			#warning "GWIN: Lists display better when GDISP_NEED_CONVEX_POLYGON is turned on"
+			#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+				#warning "GWIN: Lists display better when GDISP_NEED_CONVEX_POLYGON is turned on"
+			#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+				COMPILER_WARNING("GWIN: Lists display better when GDISP_NEED_CONVEX_POLYGON is turned on")
+			#endif
 			gdispGFillArea(gw->g.display, gw->g.x+iwidth+((LST_SCROLLWIDTH-LST_ARROW_SZ)/2+2), gw->g.y+(LST_ARROW_SZ/2+1), LST_ARROW_SZ, LST_ARROW_SZ, ps->fill);
 			gdispGFillArea(gw->g.display, gw->g.x+iwidth+((LST_SCROLLWIDTH-LST_ARROW_SZ)/2+2), gw->g.y+gw->g.height-(LST_ARROW_SZ+LST_ARROW_SZ/2+1), LST_ARROW_SZ, LST_ARROW_SZ, ps->fill);
 		#endif

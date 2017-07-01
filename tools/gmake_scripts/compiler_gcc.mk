@@ -215,7 +215,13 @@ ifneq ($(OPT_VERBOSE_COMPILE),yes)
   ifneq ($(filter %.s,$(SRC) $(SRC_NOTHUMB) $(SRC_THUMB)),)
 	@echo .
 	@echo Assembler Options.....
-	@echo $(XCC) -c $(CPPFLAGS) $(CFLAGS) $(SRCFLAGS) $(@:.o=.s) -o $(OBJDIR)/$@
+	@echo $(XAS) -c $(CPPFLAGS) $(CFLAGS) $(SRCFLAGS) $(@:.o=.s) -o $(OBJDIR)/$@
+  else
+   ifneq ($(filter %.S,$(SRC) $(SRC_NOTHUMB) $(SRC_THUMB)),)
+	@echo .
+	@echo Assembler Options.....
+	@echo $(XAS) -c $(CPPFLAGS) $(CFLAGS) $(SRCFLAGS) $(@:.o=.S) -o $(OBJDIR)/$@
+   endif
   endif
   ifneq ($(OPT_MAKE_LIB),yes)
 	@echo .
@@ -269,6 +275,16 @@ else
 endif
 
 $(OBJDIR)/%.o : $$(call obj_src,%.s)
+	@mkdir -p $(dir $@)
+ifeq ($(OPT_VERBOSE_COMPILE),yes)
+	@echo .
+	$(XAS) -c $(CPPFLAGS) $(ASFLAGS) $(SRCFLAGS) $< -o $@
+else
+	@echo Compiling $<
+	@$(XAS) -c $(CPPFLAGS) $(ASFLAGS) $(SRCFLAGS) $< -o $@
+endif
+
+$(OBJDIR)/%.o : $$(call obj_src,%.S)
 	@mkdir -p $(dir $@)
 ifeq ($(OPT_VERBOSE_COMPILE),yes)
 	@echo .

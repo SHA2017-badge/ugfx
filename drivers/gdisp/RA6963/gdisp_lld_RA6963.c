@@ -31,14 +31,16 @@
 /*===========================================================================*/
 /* Driver local definitions.                                                 */
 /*===========================================================================*/
-#if defined(GDISP_SCREEN_HEIGHT)
-#warning "GDISP: This low level driver does not support setting a screen size. It is being ignored."
-#undef GISP_SCREEN_HEIGHT
+#if defined(GDISP_SCREEN_HEIGHT) || defined(GDISP_SCREEN_HEIGHT)
+	#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+		#warning "GDISP: This low level driver does not support setting a screen size. It is being ignored."
+	#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+		COMPILER_WARNING("GDISP: This low level driver does not support setting a screen size. It is being ignored.")
+	#endif
+	#undef GDISP_SCREEN_WIDTH
+	#undef GDISP_SCREEN_HEIGHT
 #endif
-#if defined(GDISP_SCREEN_WIDTH)
-#warning "GDISP: This low level driver does not support setting a screen size. It is being ignored."
-#undef GDISP_SCREEN_WIDTH
-#endif
+
 #include "board_RA6963.h"
 
 // RA6963 Commands
@@ -213,7 +215,11 @@ static void set_viewport(GDisplay *g) {
     return;         //     0           + (  x      /         8        ) + (  y      *        16           )
   //uint16_t addr = (RA6963_GRAPHIC_HOME + ((g->p.x) / RA6963_FONT_WIDTH) + ((g->p.y) * RA6963_GRAPHIC_AREA));
   uint16_t addr = (RA6963_GRAPHIC_HOME + ((g->p.x >> 3) + (g->p.y << 4)));
-#warning "check function set_viewport about the shift operations if you change the resolution!"
+	#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+		#warning "check function set_viewport about the shift operations if you change the resolution!"
+	#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+		COMPILER_WARNING("check function set_viewport about the shift operations if you change the resolution!")
+	#endif
   write_data(g, (uint8_t)addr);
   write_data(g, (uint8_t)(addr>>8));
   write_cmd(g, RA6963_SET_ADDRESS_POINTER);

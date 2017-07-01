@@ -10,9 +10,15 @@
 	// Instead we use the Win32 API directly as that always works.
 	#define DEBUGWRITE(str)		WriteFile(GetStdHandle(STD_ERROR_HANDLE), str, strlen(str), &nres, 0)
 #else
-	#warning "You must alter this demo to define a DEBUGWRITE macro for your platform."
-	#warning "Be careful of using C library functions as they sometimes crash if they are not expecting stack changes (if possible use a multi-thread aware C library)"
-	#warning "You might flash LED's instead if that is better for your platform."
+	#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+		#warning "You must alter this demo to define a DEBUGWRITE macro for your platform."
+		#warning "Be careful of using C library functions as they sometimes crash if they are not expecting stack changes (if possible use a multi-thread aware C library)"
+		#warning "You might flash LED's instead if that is better for your platform."
+	#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+		COMPILER_WARNING("You must alter this demo to define a DEBUGWRITE macro for your platform.")
+		COMPILER_WARNING("Be careful of using C library functions as they sometimes crash if they are not expecting stack changes (if possible use a multi-thread aware C library)")
+		COMPILER_WARNING("You might flash LED's instead if that is better for your platform.")
+	#endif
 	#error "--"
 #endif
 

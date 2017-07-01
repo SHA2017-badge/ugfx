@@ -137,7 +137,11 @@
 
 	// Mutex protection is required for LWIP
 	#if !GDISP_GFXNET_UNSAFE_SOCKETS
-		#warning "GDISP: uGFXnet - LWIP sockets are not thread-safe. GDISP_GFXNET_UNSAFE_SOCKETS has been turned on for you."
+		#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+			#warning "GDISP: uGFXnet - LWIP sockets are not thread-safe. GDISP_GFXNET_UNSAFE_SOCKETS has been turned on for you."
+		#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+			COMPILER_WARNING("GDISP: uGFXnet - LWIP sockets are not thread-safe. GDISP_GFXNET_UNSAFE_SOCKETS has been turned on for you.")
+		#endif
 		#undef GDISP_GFXNET_UNSAFE_SOCKETS
 		#define GDISP_GFXNET_UNSAFE_SOCKETS	TRUE
 	#endif
@@ -352,7 +356,11 @@ static DECLARE_THREAD_FUNCTION(NetThread, param) {
     fdmax = listenfd; /* so far, it's this one*/
 
 	#if GDISP_GFXNET_BROKEN_LWIP_ACCEPT
-		#warning "Using GDISP_GFXNET_BROKEN_LWIP_ACCEPT limits the number of displays and the use of GFXNET. Avoid if possible!"
+		#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+			#warning "Using GDISP_GFXNET_BROKEN_LWIP_ACCEPT limits the number of displays and the use of GFXNET. Avoid if possible!"
+		#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+			COMPILER_WARNING("Using GDISP_GFXNET_BROKEN_LWIP_ACCEPT limits the number of displays and the use of GFXNET. Avoid if possible!")
+		#endif
 		len = sizeof(addr);
 		if((clientfd = accept(listenfd, (struct sockaddr *)&addr, &len)) == (SOCKET_TYPE)-1)
 			gfxHalt("GDISP: uGFXnet - Accept failed");

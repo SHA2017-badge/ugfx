@@ -19,7 +19,11 @@
 #if GFX_USE_GDISP
 	#if !GFX_USE_GDRIVER
 		#if GFX_DISPLAY_RULE_WARNINGS
-			#warning "GDISP: GFX_USE_GDRIVER is required. GFX_USE_GDRIVER has turned on for you."
+			#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+				#warning "GDISP: GFX_USE_GDRIVER is required. GFX_USE_GDRIVER has turned on for you."
+			#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+				COMPILER_WARNING("GDISP: GFX_USE_GDRIVER is required. GFX_USE_GDRIVER has turned on for you.")
+			#endif
 		#endif
 		#undef GFX_USE_GDRIVER
 		#define GFX_USE_GDRIVER				TRUE
@@ -34,7 +38,11 @@
 	#endif
 	#if GDISP_NEED_AUTOFLUSH && GDISP_NEED_TIMERFLUSH
 		#if GFX_DISPLAY_RULE_WARNINGS
-			#warning "GDISP: Both GDISP_NEED_AUTOFLUSH and GDISP_NEED_TIMERFLUSH has been set. GDISP_NEED_TIMERFLUSH has been disabled for you."
+			#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+				#warning "GDISP: Both GDISP_NEED_AUTOFLUSH and GDISP_NEED_TIMERFLUSH has been set. GDISP_NEED_TIMERFLUSH has been disabled for you."
+			#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+				COMPILER_WARNING("GDISP: Both GDISP_NEED_AUTOFLUSH and GDISP_NEED_TIMERFLUSH has been set. GDISP_NEED_TIMERFLUSH has been disabled for you.")
+			#endif
 		#endif
 		#undef GDISP_NEED_TIMERFLUSH
 		#define GDISP_NEED_TIMERFLUSH		FALSE
@@ -45,7 +53,11 @@
 		#endif
 		#if !GFX_USE_GTIMER
 			#if GFX_DISPLAY_RULE_WARNINGS
-				#warning "GDISP: GDISP_NEED_TIMERFLUSH has been set but GFX_USE_GTIMER has not been set. It has been turned on for you."
+				#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+					#warning "GDISP: GDISP_NEED_TIMERFLUSH has been set but GFX_USE_GTIMER has not been set. It has been turned on for you."
+				#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+					COMPILER_WARNING("GDISP: GDISP_NEED_TIMERFLUSH has been set but GFX_USE_GTIMER has not been set. It has been turned on for you.")
+				#endif
 			#endif
 			#undef GFX_USE_GTIMER
 			#define GFX_USE_GTIMER				TRUE
@@ -56,20 +68,33 @@
 	#if GDISP_NEED_ANTIALIAS && !GDISP_NEED_PIXELREAD
 		#if GDISP_HARDWARE_PIXELREAD
 			#if GFX_DISPLAY_RULE_WARNINGS
-				#warning "GDISP: GDISP_NEED_ANTIALIAS has been set but GDISP_NEED_PIXELREAD has not. It has been turned on for you."
+				#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+					#warning "GDISP: GDISP_NEED_ANTIALIAS has been set but GDISP_NEED_PIXELREAD has not. It has been turned on for you."
+				#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+					COMPILER_WARNING("GDISP: GDISP_NEED_ANTIALIAS has been set but GDISP_NEED_PIXELREAD has not. It has been turned on for you.")
+				#endif
 			#endif
 			#undef GDISP_NEED_PIXELREAD
 			#define GDISP_NEED_PIXELREAD	TRUE
 		#else
 			#if GFX_DISPLAY_RULE_WARNINGS
-				#warning "GDISP: GDISP_NEED_ANTIALIAS has been set but your hardware does not support reading back pixels. Anti-aliasing will only occur for filled characters."
+				#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+					#warning "GDISP: GDISP_NEED_ANTIALIAS has been set but your hardware does not support reading back pixels. Anti-aliasing will only occur for filled characters."
+				#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+					COMPILER_WARNING("GDISP: GDISP_NEED_ANTIALIAS has been set but your hardware does not support reading back pixels. Anti-aliasing will only occur for filled characters.")
+				#endif
 			#endif
 		#endif
 	#endif
 	#if (defined(GDISP_INCLUDE_FONT_SMALL) && GDISP_INCLUDE_FONT_SMALL) || (defined(GDISP_INCLUDE_FONT_LARGER) && GDISP_INCLUDE_FONT_LARGER)
 		#if GFX_DISPLAY_RULE_WARNINGS
-			#warning "GDISP: An old font (Small or Larger) has been defined. A single default font of UI2 has been added instead."
-			#warning "GDISP: Please see <$(GFXLIB)/include/gdisp/fonts/fonts.h> for a list of available font names."
+			#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+				#warning "GDISP: An old font (Small or Larger) has been defined. A single default font of UI2 has been added instead."
+				#warning "GDISP: Please see <$(GFXLIB)/include/gdisp/fonts/fonts.h> for a list of available font names."
+			#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+				COMPILER_WARNING("GDISP: An old font (Small or Larger) has been defined. A single default font of UI2 has been added instead.")
+				COMPILER_WARNING("GDISP: Please see <$(GFXLIB)/include/gdisp/fonts/fonts.h> for a list of available font names.")
+			#endif
 		#endif
 		#undef GDISP_INCLUDE_FONT_UI2
 		#define GDISP_INCLUDE_FONT_UI2		TRUE
@@ -77,7 +102,11 @@
 	#if GDISP_NEED_IMAGE
 		#if !GFX_USE_GFILE
 			#if GFX_DISPLAY_RULE_WARNINGS
-				#warning "GDISP: GFX_USE_GFILE is required when GDISP_NEED_IMAGE is TRUE. It has been turned on for you."
+				#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+					#warning "GDISP: GFX_USE_GFILE is required when GDISP_NEED_IMAGE is TRUE. It has been turned on for you."
+				#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+					COMPILER_WARNING("GDISP: GFX_USE_GFILE is required when GDISP_NEED_IMAGE is TRUE. It has been turned on for you.")
+				#endif
 			#endif
 			#undef GFX_USE_GFILE
 			#define GFX_USE_GFILE	TRUE

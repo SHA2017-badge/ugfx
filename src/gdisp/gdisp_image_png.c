@@ -267,7 +267,11 @@ static void PNG_oColor(PNG_output *o, color_t c) {
 #if (GDISP_IMAGE_PNG_Z_BUFFER_SIZE & ~(GDISP_IMAGE_PNG_Z_BUFFER_SIZE-1)) == GDISP_IMAGE_PNG_Z_BUFFER_SIZE
 	#define WRAP_ZBUF(x)	{ x &= GDISP_IMAGE_PNG_Z_BUFFER_SIZE-1; }
 #else
-	#warning "PNG: GDISP_IMAGE_PNG_Z_BUFFER_SIZE is more efficient as a power of 2"
+	#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+		#warning "PNG: GDISP_IMAGE_PNG_Z_BUFFER_SIZE is more efficient as a power of 2"
+	#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+		COMPILER_WARNING("PNG: GDISP_IMAGE_PNG_Z_BUFFER_SIZE is more efficient as a power of 2")
+	#endif
 	#define WRAP_ZBUF(x)	{ if (x >= GDISP_IMAGE_PNG_Z_BUFFER_SIZE) x = 0; }
 #endif
 

@@ -38,6 +38,7 @@ FIX:		Fixed issue where the variable type of the syncflags of the STM32LTDC driv
 FEATURE:	Added KS0108 driver
 FEATURE:	Added RA6963 driver
 FIX:		Fixed clipping issue in gdispGDrawString()
+CHANGE:		Upgrade GFILE FATFS support from V0.10b to V0.13
 
 
 *** Release 2.7 ***

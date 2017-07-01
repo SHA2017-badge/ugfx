@@ -38,6 +38,12 @@
 	#define TRUE        -1
 #endif
 
+// Macro concatination and strify - not API documented
+#define GFXCATX(a, b)	GFXCAT(a, b)
+#define GFXCAT(a, b)	a ## b
+#define GFXSTRX(a)		GFXSTR(a)
+#define GFXSTR(a)		#a
+
 /* gfxconf.h is the user's project configuration for the GFX system. */
 #include "gfxconf.h"
 

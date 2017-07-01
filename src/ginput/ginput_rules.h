@@ -19,14 +19,22 @@
 #if GFX_USE_GINPUT
 	#if !GFX_USE_GEVENT
 		#if GFX_DISPLAY_RULE_WARNINGS
-			#warning "GINPUT: GFX_USE_GEVENT is required if GFX_USE_GINPUT is TRUE. It has been turned on for you."
+			#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+				#warning "GINPUT: GFX_USE_GEVENT is required if GFX_USE_GINPUT is TRUE. It has been turned on for you."
+			#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+				COMPILER_WARNING("GINPUT: GFX_USE_GEVENT is required if GFX_USE_GINPUT is TRUE. It has been turned on for you.")
+			#endif
 		#endif
 		#undef GFX_USE_GEVENT
 		#define	GFX_USE_GEVENT		TRUE
 	#endif
 	#if !GFX_USE_GTIMER
 		#if GFX_DISPLAY_RULE_WARNINGS
-			#warning "GINPUT: GFX_USE_GTIMER is required if GFX_USE_GINPUT is TRUE. It has been turned on for you."
+			#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+				#warning "GINPUT: GFX_USE_GTIMER is required if GFX_USE_GINPUT is TRUE. It has been turned on for you."
+			#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+				COMPILER_WARNING("GINPUT: GFX_USE_GTIMER is required if GFX_USE_GINPUT is TRUE. It has been turned on for you.")
+			#endif
 		#endif
 		#undef GFX_USE_GTIMER
 		#define	GFX_USE_GTIMER		TRUE

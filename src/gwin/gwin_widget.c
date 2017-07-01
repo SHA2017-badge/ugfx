@@ -418,9 +418,8 @@ void _gwidgetDestroy(GHandle gh) {
 		for(role = 0; role < wvmt->toggleroles; role++) {
 			instance = wvmt->ToggleGet(gw, role);
 			if (instance != GWIDGET_NO_INSTANCE) {
+				printf("widget destroy\n");
 				wvmt->ToggleAssign(gw, role, GWIDGET_NO_INSTANCE);
-				if (!FindToggleUser(instance))
-					geventDetachSource(&gl, ginputGetToggle(instance));
 			}
 		}
 	#endif

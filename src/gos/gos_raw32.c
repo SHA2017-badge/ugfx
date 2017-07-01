@@ -26,7 +26,11 @@ void _gosInit(void)
 	 * getting here!
 	 */
 	#if !GFX_OS_INIT_NO_WARNING
-		#warning "GOS: Raw32 - Make sure you initialize your hardware and the C runtime before calling gfxInit() in your application!"
+		#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+			#warning "GOS: Raw32 - Make sure you initialize your hardware and the C runtime before calling gfxInit() in your application!"
+		#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+			COMPILER_WARNING("GOS: Raw32 - Make sure you initialize your hardware and the C runtime before calling gfxInit() in your application!")
+		#endif
 	#endif
 
 	// Set up the heap allocator

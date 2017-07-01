@@ -23,7 +23,11 @@
 	#endif
 	#if !GDISP_NEED_CLIP
 		#if GFX_DISPLAY_RULE_WARNINGS
-			#warning "GWIN: Drawing can occur outside the defined windows as GDISP_NEED_CLIP is FALSE"
+			#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+				#warning "GWIN: Drawing can occur outside the defined windows as GDISP_NEED_CLIP is FALSE"
+			#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+				COMPILER_WARNING("GWIN: Drawing can occur outside the defined windows as GDISP_NEED_CLIP is FALSE")
+			#endif
 		#endif
 	#endif
 
@@ -31,7 +35,11 @@
 	#if GWIN_NEED_TABSET || GWIN_NEED_FRAME || GWIN_NEED_CONTAINER
 		#if !GWIN_NEED_CONTAINERS
 			#if GFX_DISPLAY_RULE_WARNINGS
-				#warning "GWIN: GWIN_NEED_CONTAINERS is required when a container is enabled. It has been turned on for you."
+				#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+					#warning "GWIN: GWIN_NEED_CONTAINERS is required when a container is enabled. It has been turned on for you."
+				#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+					COMPILER_WARNING("GWIN: GWIN_NEED_CONTAINERS is required when a container is enabled. It has been turned on for you.")
+				#endif
 			#endif
 			#undef GWIN_NEED_CONTAINERS
 			#define GWIN_NEED_CONTAINERS	TRUE
@@ -41,7 +49,11 @@
 		GWIN_NEED_IMAGE || GWIN_NEED_CHECKBOX || GWIN_NEED_PROGRESSBAR || GWIN_NEED_KEYBOARD || GWIN_NEED_TEXTEDIT
 		#if !GWIN_NEED_WIDGET
 			#if GFX_DISPLAY_RULE_WARNINGS
-				#warning "GWIN: GWIN_NEED_WIDGET is required when a widget is used. It has been turned on for you."
+				#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+					#warning "GWIN: GWIN_NEED_WIDGET is required when a widget is used. It has been turned on for you."
+				#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+					COMPILER_WARNING("GWIN: GWIN_NEED_WIDGET is required when a widget is used. It has been turned on for you.")
+				#endif
 			#endif
 			#undef GWIN_NEED_WIDGET
 			#define GWIN_NEED_WIDGET	TRUE
@@ -52,7 +64,11 @@
 	#if GWIN_NEED_CONTAINERS
 		#if !GWIN_NEED_WIDGET
 			#if GFX_DISPLAY_RULE_WARNINGS
-				#warning "GWIN: GWIN_NEED_WIDGET is required when GWIN_NEED_CONTAINERS is enabled. It has been turned on for you."
+				#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+					#warning "GWIN: GWIN_NEED_WIDGET is required when GWIN_NEED_CONTAINERS is enabled. It has been turned on for you."
+				#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+					COMPILER_WARNING("GWIN: GWIN_NEED_WIDGET is required when GWIN_NEED_CONTAINERS is enabled. It has been turned on for you.")
+				#endif
 			#endif
 			#undef GWIN_NEED_WIDGET
 			#define GWIN_NEED_WIDGET	TRUE
@@ -68,14 +84,22 @@
 		#endif
 		#if !GWIN_NEED_WINDOWMANAGER
 			#if GFX_DISPLAY_RULE_WARNINGS
-				#warning "GWIN: GWIN_NEED_WINDOWMANAGER is required if GWIN_NEED_WIDGET is TRUE. It has been turned on for you."
+				#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+					#warning "GWIN: GWIN_NEED_WINDOWMANAGER is required if GWIN_NEED_WIDGET is TRUE. It has been turned on for you."
+				#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+					COMPILER_WARNING("GWIN: GWIN_NEED_WINDOWMANAGER is required if GWIN_NEED_WIDGET is TRUE. It has been turned on for you.")
+				#endif
 			#endif
 			#undef GWIN_NEED_WINDOWMANAGER
 			#define GWIN_NEED_WINDOWMANAGER	TRUE
 		#endif
 		#if !GDISP_NEED_MULTITHREAD
 			#if GFX_DISPLAY_RULE_WARNINGS
-				#warning "GWIN: GDISP_NEED_MULTITHREAD is required if GWIN_NEED_WIDGET is TRUE. It has been turned on for you"
+				#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+					#warning "GWIN: GDISP_NEED_MULTITHREAD is required if GWIN_NEED_WIDGET is TRUE. It has been turned on for you"
+				#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+					COMPILER_WARNING("GWIN: GDISP_NEED_MULTITHREAD is required if GWIN_NEED_WIDGET is TRUE. It has been turned on for you")
+				#endif
 			#endif
 			#undef GDISP_NEED_MULTITHREAD
 			#define GDISP_NEED_MULTITHREAD	TRUE
@@ -84,7 +108,11 @@
 	#if GWIN_NEED_WINDOWMANAGER
 		#if !GFX_USE_GQUEUE || !GQUEUE_NEED_ASYNC
 			#if GFX_DISPLAY_RULE_WARNINGS
-				#warning "GWIN: GFX_USE_GQUEUE and GQUEUE_NEED_ASYNC is required if GWIN_NEED_WINDOWMANAGER is TRUE. It has been turned on for you."
+				#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+					#warning "GWIN: GFX_USE_GQUEUE and GQUEUE_NEED_ASYNC is required if GWIN_NEED_WINDOWMANAGER is TRUE. It has been turned on for you."
+				#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+					COMPILER_WARNING("GWIN: GFX_USE_GQUEUE and GQUEUE_NEED_ASYNC is required if GWIN_NEED_WINDOWMANAGER is TRUE. It has been turned on for you.")
+				#endif
 			#endif
 			#undef GFX_USE_GQUEUE
 			#undef GQUEUE_NEED_ASYNC
@@ -93,7 +121,11 @@
 		#endif
 		#if !GFX_USE_GTIMER
 			#if GFX_DISPLAY_RULE_WARNINGS
-				#warning "GWIN: GFX_USE_GTIMER is required if GWIN_NEED_WINDOWMANAGER is TRUE. It has been turned on for you."
+				#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+					#warning "GWIN: GFX_USE_GTIMER is required if GWIN_NEED_WINDOWMANAGER is TRUE. It has been turned on for you."
+				#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+					COMPILER_WARNING("GWIN: GFX_USE_GTIMER is required if GWIN_NEED_WINDOWMANAGER is TRUE. It has been turned on for you.")
+				#endif
 			#endif
 			#undef GFX_USE_GTIMER
 			#define GFX_USE_GTIMER		TRUE
@@ -109,7 +141,11 @@
 	#if GWIN_NEED_RADIO
 		#if !GDISP_NEED_CIRCLE
 			#if GFX_DISPLAY_RULE_WARNINGS
-				#warning "GWIN: GDISP_NEED_CIRCLE should be set to TRUE for much nicer radio button widgets."
+				#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+					#warning "GWIN: GDISP_NEED_CIRCLE should be set to TRUE for much nicer radio button widgets."
+				#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+					COMPILER_WARNING("GWIN: GDISP_NEED_CIRCLE should be set to TRUE for much nicer radio button widgets.")
+				#endif
 			#endif
 		#endif
 	#endif

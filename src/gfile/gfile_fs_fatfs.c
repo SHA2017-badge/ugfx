@@ -87,7 +87,7 @@ static BYTE fatfs_flags2mode(GFILE* f)
 	if (f->flags & GFILEFLG_WRITE)
 		mode |= FA_WRITE;
 	if (f->flags & GFILEFLG_APPEND)
-		mode |= 0;  // ToDo
+		mode |= FA_OPEN_APPEND;
 	if (f->flags & GFILEFLG_TRUNC)
 		mode |= FA_CREATE_ALWAYS;
 

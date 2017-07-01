@@ -69,7 +69,11 @@ static GFXINLINE void init_board(GDisplay *g) {
 				dmaStreamSetMemory0(GDISP_DMA_STREAM, &GDISP_RAM);
 				dmaStreamSetMode(GDISP_DMA_STREAM, STM32_DMA_CR_PL(0) | STM32_DMA_CR_PSIZE_HWORD | STM32_DMA_CR_MSIZE_HWORD | STM32_DMA_CR_DIR_M2M);
 			#else
-				#warning "GDISP: SSD1289 - DMA is supported for F2/F4 Devices. Define GDISP_USE_DMA in your gfxconf.h to turn this on for better performance."
+				#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+					#warning "GDISP: SSD1289 - DMA is supported for F2/F4 Devices. Define GDISP_USE_DMA in your gfxconf.h to turn this on for better performance."
+				#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+					COMPILER_WARNING("GDISP: SSD1289 - DMA is supported for F2/F4 Devices. Define GDISP_USE_DMA in your gfxconf.h to turn this on for better performance.")
+				#endif
 			#endif
 		#else
 			#error "GDISP: SSD1289 - FSMC not implemented for this device"

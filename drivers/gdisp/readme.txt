@@ -18,7 +18,7 @@ Nokia6610GE12      - Small (130x130) 12bit color LCD (untested)
 PCD8544            - Small monochrome LCD
 PCF8812            - Small monochrome LCD
 R61505U            - Mid-sized color LCD displays eg RGB565 320x240
-RA6963             - Small monochrom LCD
+RA6963             - Small monochrome LCD
 RA8875             - Mid-sized color LCD displays eg RGB565 320x240
 S6D1121            - Mid-sized color LCD displays eg RGB565 320x240
 SPFD54124B         - Mid-sized color LCD displays eg RGB565 320x240

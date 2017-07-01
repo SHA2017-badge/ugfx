@@ -78,7 +78,7 @@ bool_t gfxSemWait(gfxSem *psem, delaytime_t ms) {
 	return WaitForSingleObject(*psem, ms) == WAIT_OBJECT_0;
 }
 
-typedef LONG __stdcall (*_NtQuerySemaphore)(
+typedef LONG (__stdcall *_NtQuerySemaphore)(
     HANDLE SemaphoreHandle,
     DWORD SemaphoreInformationClass, /* Would be SEMAPHORE_INFORMATION_CLASS */
     PVOID SemaphoreInformation,      /* but this is to much to dump here     */
@@ -101,7 +101,7 @@ semcount_t gfxSemCounter(gfxSem *pSem) {
     return BasicInfo.CurrentCount;
 }
 
-gfxThreadHandle gfxThreadCreate(void *stackarea, size_t stacksz, threadpriority_t prio, DECLARE_THREAD_FUNCTION((*fn),p), void *param) {
+gfxThreadHandle gfxThreadCreate(void *stackarea, size_t stacksz, threadpriority_t prio, DECLARE_THREAD_FUNCTION(*fn,p), void *param) {
 	(void)	stackarea;
 	HANDLE	thd;
 

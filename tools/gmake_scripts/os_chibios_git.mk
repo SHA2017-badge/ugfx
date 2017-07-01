@@ -51,7 +51,7 @@ include $(CHIBIOS)/os/common/ports/$(CHIBIOS_CPUCLASS)/compilers/GCC/mk/port_$(C
 ifneq ($(CHIBIOS_BOARD),)
   include $(CHIBIOS)/os/hal/boards/$(CHIBIOS_BOARD)/board.mk
 endif
-LIBPATH += $(CHIBIOS)/os/common/ports/$(CHIBIOS_CPUCLASS)/compilers/GCC
+LIBPATH += $(CHIBIOS)/os/common/startup/$(CHIBIOS_CPUCLASS)/compilers/GCC/ld
 
 ifeq ($(LDSCRIPT),)
   ifneq ($(CHIBIOS_LDSCRIPT),)
@@ -70,6 +70,20 @@ ifneq ($(LDSCRIPT),)
   else
     LDFLAGS += -Wl,--defsym=__main_stack_size__=$(CHIBIOS_EXCEPTIONS_STACKSIZE)
   endif
+endif
+
+ifeq ($(CHIBIOS_FATFS),1)
+  include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
+  INCPATH += $(FATFSINC)
+  SRC += $(FATFSSRC)
+endif
+
+ifeq ($(CHIBIOS_LWIP),1)
+  include $(CHIBIOS)/os/various/lwip_bindings/lwip.mk
+  INCPATH += $(LWINC) \
+	     $(CHIBIOS)/os/various
+  SRC += $(LWSRC) \
+	 $(CHIBIOS)/os/various/evtimer.c
 endif
 
 # Add include files

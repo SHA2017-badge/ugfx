@@ -380,7 +380,11 @@
 			KMC_RECORDSTART, 0
 		};
 	#elif !GKEYBOARD_LAYOUT_OFF
-		#warning "The WIN32 keyboard driver is not using the layout engine. If no other keyboard is using it consider defining GKEYBOARD_LAYOUT_OFF=TRUE to save code size."
+		#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+			#warning "The WIN32 keyboard driver is not using the layout engine. If no other keyboard is using it consider defining GKEYBOARD_LAYOUT_OFF=TRUE to save code size."
+		#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+			COMPILER_WARNING("The WIN32 keyboard driver is not using the layout engine. If no other keyboard is using it consider defining GKEYBOARD_LAYOUT_OFF=TRUE to save code size.")
+		#endif
 	#endif
 
 	// Forward definitions
@@ -883,7 +887,7 @@ LLDSPEC bool_t gdisp_lld_init(GDisplay *g) {
 	#endif
 
 	sprintf(buf, APP_NAME " - %u", g->systemdisplay+1);
-	SetWindowText(priv->hwnd, buf);
+	SetWindowTextA(priv->hwnd, buf);
 	ShowWindow(priv->hwnd, SW_SHOW);
 	UpdateWindow(priv->hwnd);
 

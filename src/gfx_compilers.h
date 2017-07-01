@@ -285,12 +285,19 @@
 	 *
 	 *  Please keep this list in alphabetical order to keep it easier to maintain
 	 */
+	
 	#undef GFX_COMPILER_NAME
 	#undef GFX_COMPILER_TESTED
 	#undef GFX_COMPILER_VERSION_MAJOR
 	#undef GFX_COMPILER_VERSION_MINOR
 	#undef GFX_COMPILER_VERSION_PATCH
 	#undef GFX_COMPILER_VERSION_BUILD
+	#undef GFX_COMPILER_WARNING_TYPE
+		#define GFX_COMPILER_WARNING_NONE			0		/* Don't display warnings */
+		#define GFX_COMPILER_WARNING_DIRECT			1		/* Use #warning text, no macro expansion possible */
+		#define GFX_COMPILER_WARNING_MACRO			2		/* Use COMPILER_WARNING(text), macro expansion possible */
+		#define GFX_COMPILER_WARNING_GCC			3		/* Use GCC style warnings - converted to GFX_COMPILER_WARNING_MACRO */
+	
 	#if GFX_COMPILER ==  GFX_COMPILER_ACC
 		#if GFX_SHOW_COMPILER && GFX_DISPLAY_RULE_WARNINGS
 			#warning "Compiler: ACC"
@@ -338,6 +345,7 @@
 		#define GFX_COMPILER_VERSION_MINOR			(((__ARMCC_VERSION)/10000)%10)
 		#define GFX_COMPILER_VERSION_PATCH			(((__ARMCC_VERSION)/1000)%10)
 		#define GFX_COMPILER_VERSION_BUILD			((__ARMCC_VERSION)%1000)
+		#pragma anon_unions							// Allow anonymous unions
 		#define __LITTLE_IF_NOT_BIG__				// Oops - Defines __BIG_ENDIAN but not __LITTLE_ENDIAN
 	#elif GFX_COMPILER == GFX_COMPILER_AZTEC
 		#if GFX_SHOW_COMPILER && GFX_DISPLAY_RULE_WARNINGS
@@ -362,11 +370,9 @@
 		#define GFX_COMPILER_VERSION_MINOR			(((__CC65__)/0x10)%0x10)
 		#define GFX_COMPILER_VERSION_PATCH			((__CC65__)%0x10)
 	#elif GFX_COMPILER == GFX_COMPILER_CLANG
-		#if GFX_SHOW_COMPILER && GFX_DISPLAY_RULE_WARNINGS
-			#warning "Compiler: CLANG"
-		#endif
 		#define GFX_COMPILER_NAME					"CLang (LLVM)"
 		#define GFX_COMPILER_TESTED					TRUE
+		#define GFX_COMPILER_WARNING_TYPE			GFX_COMPILER_WARNING_GCC
 		#define GFX_COMPILER_VERSION_MAJOR			(__clang_major__)
 		#define GFX_COMPILER_VERSION_MINOR			(__clang_minor__)
 		#define GFX_COMPILER_VERSION_PATCH			(__clang_patchlevel__)
@@ -404,11 +410,9 @@
 		#define GFX_COMPILER_VERSION_MAJOR			(_RELEASE)
 		#define GFX_COMPILER_VERSION_MINOR			(_RELEASE_MINOR)
 	#elif GFX_COMPILER == GFX_COMPILER_CYGWIN
-		#if GFX_SHOW_COMPILER && GFX_DISPLAY_RULE_WARNINGS
-			#warning "Compiler: CYGWIN"
-		#endif
 		#define GFX_COMPILER_NAME					"Cygwin"
 		#define GFX_COMPILER_TESTED					TRUE
+		#define GFX_COMPILER_WARNING_TYPE			GFX_COMPILER_WARNING_GCC
 		#define GFX_COMPILER_VERSION_MAJOR			(__GNUC__)
 		#define GFX_COMPILER_VERSION_MINOR			(__GNUC_MINOR__)
 		#ifdef __GNUC_PATCHLEVEL__
@@ -489,11 +493,9 @@
 		#endif
 		#define GFX_COMPILER_NAME					"Fujitsu C++"
 	#elif GFX_COMPILER == GFX_COMPILER_GCC
-		#if GFX_SHOW_COMPILER && GFX_DISPLAY_RULE_WARNINGS
-			#warning "Compiler: GCC"
-		#endif
 		#define GFX_COMPILER_NAME					"GCC"
 		#define GFX_COMPILER_TESTED					TRUE
+		#define GFX_COMPILER_WARNING_TYPE			GFX_COMPILER_WARNING_GCC
 		#define GFX_COMPILER_VERSION_MAJOR			(__GNUC__)
 		#define GFX_COMPILER_VERSION_MINOR			(__GNUC_MINOR__)
 		#ifdef __GNUC_PATCHLEVEL__
@@ -654,11 +656,9 @@
 		#endif
 		#define GFX_COMPILER_NAME					"Microway NDP C"
 	#elif GFX_COMPILER == GFX_COMPILER_MINGW32
-		#if GFX_SHOW_COMPILER && GFX_DISPLAY_RULE_WARNINGS
-			#warning "Compiler: MINGW32"
-		#endif
 		#define GFX_COMPILER_NAME					"MingW32"
 		#define GFX_COMPILER_TESTED					TRUE
+		#define GFX_COMPILER_WARNING_TYPE			GFX_COMPILER_WARNING_GCC
 		#define GFX_COMPILER_VERSION_MAJOR			(__GNUC__)
 		#define GFX_COMPILER_VERSION_MINOR			(__GNUC_MINOR__)
 		#ifdef __GNUC_PATCHLEVEL__
@@ -666,10 +666,8 @@
 		#endif
 		#define DEPRECATED(msg)						__attribute__((deprecated(msg)))
 	#elif GFX_COMPILER == GFX_COMPILER_MINGW64
-		#if GFX_SHOW_COMPILER && GFX_DISPLAY_RULE_WARNINGS
-			#warning "Compiler: MINGW64"
-		#endif
 		#define GFX_COMPILER_NAME					"MingW64"
+		#define GFX_COMPILER_WARNING_TYPE			GFX_COMPILER_WARNING_GCC
 		#define GFX_COMPILER_VERSION_MAJOR			(__GNUC__)
 		#define GFX_COMPILER_VERSION_MINOR			(__GNUC_MINOR__)
 		#ifdef __GNUC_PATCHLEVEL__
@@ -890,9 +888,6 @@
 		#endif
 		#define GFX_COMPILER_NAME					"VBCC"
 	#elif GFX_COMPILER == GFX_COMPILER_VS
-		#if GFX_SHOW_COMPILER && GFX_DISPLAY_RULE_WARNINGS
-			#warning "Compiler: VS"
-		#endif
 		#define GFX_COMPILER_NAME					"Microsoft Visual Studio"
 		#ifdef _MSC_FULL_VER
 			#if _MSC_FULL_VER < 100000000
@@ -912,6 +907,9 @@
 			#define GFX_COMPILER_VERSION_BUILD		(_MSC_BUILD)
 		#endif
 		#define DEPRECATED(msg)						__declspec(deprecated(msg))
+
+		#define GFX_COMPILER_WARNING_TYPE			GFX_COMPILER_WARNING_MACRO
+		#define COMPILER_WARNING(desc)				__pragma(message(__FILE__ "(" GFXSTRX(__LINE__) "): warning uGFX: " desc))
 	#elif GFX_COMPILER == GFX_COMPILER_WATCOM
 		#if GFX_SHOW_COMPILER && GFX_DISPLAY_RULE_WARNINGS
 			#warning "Compiler: WATCOM"
@@ -928,8 +926,17 @@
 		#define GFX_COMPILER_VERSION_MINOR			(((__ZTC__)/0x10)%0x10)
 		#define GFX_COMPILER_VERSION_PATCH			((__ZTC__)%0x10)
 	#endif
+
 	#ifndef GFX_COMPILER_TESTED
-		#define GFX_COMPILER_TESTED		FALSE
+		#define GFX_COMPILER_TESTED					FALSE
+	#endif
+	#ifndef GFX_COMPILER_WARNING_TYPE
+		#define GFX_COMPILER_WARNING_TYPE				GFX_COMPILER_WARNING_DIRECT
+	#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_GCC
+		#undef GFX_COMPILER_WARNING_TYPE
+		#define GFX_COMPILER_WARNING_TYPE				GFX_COMPILER_WARNING_MACRO
+		#define COMPILER_PRAGMA(x)					_Pragma(#x)
+		#define COMPILER_WARNING(desc)				COMPILER_PRAGMA(GCC warning desc)
 	#endif
 	/************************************ End Compiler Settings *************************/
 
@@ -944,6 +951,11 @@
 		#define GFX_COMPILER_NAME		"Unknown"
 		#warning "You are using an unknown compiler. Please report this on the ugfx forum"
 	#endif
+	#if GFX_SHOW_COMPILER && GFX_DISPLAY_RULE_WARNINGS
+		#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+				COMPILER_WARNING(GFXSTRX(Compiler: GFX_COMPILER_NAME))
+		#endif
+	#endif
 
 	/**
 	 * @brief	This compiler is tested with ugfx
@@ -955,8 +967,12 @@
 	 * 			tested with a different compiler version. Please report any problems
 	 * 			on the ugfx forum.
 	 */
-	#if !GFX_COMPILER_TESTED
-		#warning "You are using an un-tested compiler. Please report any compile errors or warnings on the ugfx forum"
+	#if !GFX_COMPILER_TESTED && GFX_DISPLAY_RULE_WARNINGS
+		#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+			#warning "You are using an un-tested compiler. Please report any compile errors or warnings on the ugfx forum"
+		#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+			COMPILER_WARNING(GFXSTRX(You are using the un-tested GFX_COMPILER_NAME compiler. Please report any compile errors or warnings on the ugfx forum))
+		#endif
 	#endif
 
 	/**

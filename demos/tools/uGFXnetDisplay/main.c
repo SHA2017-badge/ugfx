@@ -97,7 +97,11 @@
 
 	// Mutex protection is required for LWIP
 	#if !GDISP_GFXNET_UNSAFE_SOCKETS
-		#warning "GDISP: uGFXnet - LWIP sockets are not thread-safe. GDISP_GFXNET_UNSAFE_SOCKETS has been turned on for you."
+		#if GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_DIRECT
+			#warning "GDISP: uGFXnet - LWIP sockets are not thread-safe. GDISP_GFXNET_UNSAFE_SOCKETS has been turned on for you."
+		#elif GFX_COMPILER_WARNING_TYPE == GFX_COMPILER_WARNING_MACRO
+			COMPILER_WARNING("GDISP: uGFXnet - LWIP sockets are not thread-safe. GDISP_GFXNET_UNSAFE_SOCKETS has been turned on for you.")
+		#endif
 		#undef GDISP_GFXNET_UNSAFE_SOCKETS
 		#define GDISP_GFXNET_UNSAFE_SOCKETS	TRUE
 	#endif

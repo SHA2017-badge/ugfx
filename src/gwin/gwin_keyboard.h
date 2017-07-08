@@ -62,6 +62,17 @@ typedef struct GKeyboardObject {
 	uint8_t					lastkeyrow, lastkeycol;
 	uint8_t					keyrow, keycol;
 	uint32_t				key;
+	#if GINPUT_NEED_TOGGLE
+		uint16_t	t_up;
+		uint16_t	t_down;
+		uint16_t	t_left;
+		uint16_t	t_right;
+		uint16_t	t_press;
+		uint8_t		t_row;
+		uint8_t		t_lastrow;
+		uint8_t		t_col;
+		uint8_t		t_lastcol;
+	#endif
 } GKeyboardObject;
 
 #ifdef __cplusplus

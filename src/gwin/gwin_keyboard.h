@@ -62,6 +62,17 @@ typedef struct GKeyboardObject {
 	uint8_t					lastkeyrow, lastkeycol;
 	uint8_t					keyrow, keycol;
 	uint32_t				key;
+	#if GINPUT_NEED_TOGGLE
+		uint16_t	t_up;
+		uint16_t	t_down;
+		uint16_t	t_left;
+		uint16_t	t_right;
+		uint16_t	t_press;
+		uint8_t		t_row;
+		uint8_t		t_lastrow;
+		uint8_t		t_col;
+		uint8_t		t_lastcol;
+	#endif
 } GKeyboardObject;
 
 #ifdef __cplusplus
@@ -109,6 +120,17 @@ GSourceHandle gwinKeyboardGetEventSource(GHandle gh);
  * 			pending shifts.
  */
 void gwinKeyboardSetLayout(GHandle gh, const struct GVKeyTable *layout);
+
+/**
+ * @brief   Get the selected key when using toggle
+ *
+ * @param[in] gh		The GWIN virtual keyboard
+ * @param[in] utf8_str	Up to 4 bytes of utf8 data
+ * @return              The number of bytes written
+ *
+ * @note	Returns 0 for an invalid selection
+ */
+uint8_t gwinKeyboardGetSelected(GHandle gh, uint8_t *utf8_str);
 
 /**
  * @defgroup Renderings_Keyboard Renderings

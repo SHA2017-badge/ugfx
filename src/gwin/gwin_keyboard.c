@@ -294,6 +294,165 @@ static void SendVirtualKeyEvent(GKeyboardObject *gk) {
 	}
 #endif
 
+#if GINPUT_NEED_TOGGLE
+#define gk		((GKeyboardObject *)gw)
+	// a toggle-on has occurred
+	static void KeyToggleOn(GWidgetObject *gw, uint16_t role) {
+
+
+
+		uint8_t rows = NumKeyRows(gk->keyset);
+		uint8_t lastcols = UTF8StrLen((const utf8 *)gk->keyset[gk->t_lastrow]);
+
+		//these statements are needed due to different keysets having different number of rows
+		if (gk->t_lastrow >= rows){
+			gk->t_row = rows - 1;
+			gk->t_lastrow = rows - 1;
+			gk->t_col = gk->t_lastcol;
+			gw->g.flags |= GKEYBOARD_FLG_QUICKUPDATE;
+			_gwinUpdate((GHandle)gw);
+			return;
+		}
+
+
+		switch (role) {
+			case 0:
+				if (gk->t_lastrow > 0){
+					//We want to move down to the button graphically below rather than just inc a position
+
+					uint8_t cols = UTF8StrLen((const utf8 *)gk->keyset[gk->t_lastrow-1]);
+					uint16_t newcol = gk->t_lastcol * cols + (cols>>1);
+					newcol = newcol / lastcols;
+					if (newcol >= cols)
+						newcol = cols-1;
+
+					gk->t_row = gk->t_lastrow - 1;
+					gk->t_col = newcol;
+
+					//handle larger buttons
+					const utf8 * krow = (const utf8 *)gk->keyset[gk->t_row];
+					while(gk->t_col > 0) {
+						if(UTF8CharAt(krow, gk->t_col) != UTF8CharAt(krow, gk->t_col-1))
+							break;
+						gk->t_col--;
+					}
+
+					gw->g.flags |= GKEYBOARD_FLG_QUICKUPDATE;
+					_gwinUpdate((GHandle)gw);
+				}
+				break;
+			case 1:
+				if (gk->t_lastrow < (rows - 1)){
+					//We want to move down to the button graphically below rather than just inc a position
+					uint8_t cols = UTF8StrLen((const utf8 *)gk->keyset[gk->t_lastrow+1]);
+					uint16_t newcol = gk->t_lastcol * cols + (cols>>1);
+					newcol = newcol / lastcols;
+					if (newcol >= cols)
+						newcol = cols-1;
+
+					gk->t_row = gk->t_lastrow + 1;
+					gk->t_col = newcol;
+
+					//handle larger buttons
+					const utf8 * krow = (const utf8 *)gk->keyset[gk->t_row];
+					while(gk->t_col > 0) {
+						if(UTF8CharAt(krow, gk->t_col) != UTF8CharAt(krow, gk->t_col-1))
+							break;
+						gk->t_col--;
+					}
+
+					gw->g.flags |= GKEYBOARD_FLG_QUICKUPDATE;
+					_gwinUpdate((GHandle)gw);
+				}
+				break;
+			case 2:
+				if (gk->t_lastcol > 0){
+					gk->t_col = gk->t_lastcol - 1;
+					//handle larger buttons
+					const utf8 * krow = (const utf8 *)gk->keyset[gk->t_lastrow];
+					while(gk->t_col > 0) {
+						if(UTF8CharAt(krow, gk->t_col) != UTF8CharAt(krow, gk->t_col-1))
+							break;
+						gk->t_col--;
+					}
+					gk->t_row = gk->t_lastrow;
+					gw->g.flags |= GKEYBOARD_FLG_QUICKUPDATE;
+					_gwinUpdate((GHandle)gw);
+				}
+				break;
+			case 3:
+				if (gk->t_lastcol < (lastcols - 1)){
+					gk->t_col = gk->t_lastcol + 1;
+					//handle larger buttons
+					const utf8 * krow = (const utf8 *)gk->keyset[gk->t_lastrow];
+					while(gk->t_col < (lastcols-1)){
+						if(UTF8CharAt(krow, gk->t_col) != UTF8CharAt(krow, gk->t_col-1))
+							break;
+						gk->t_col++;
+					}
+					if (UTF8CharAt(krow, gk->t_col) == UTF8CharAt(krow, gk->t_lastcol))
+						gk->t_col = gk->t_lastcol;
+					gk->t_row = gk->t_lastrow;
+					gw->g.flags |= GKEYBOARD_FLG_QUICKUPDATE;
+					_gwinUpdate((GHandle)gw);
+				}
+				break;
+			default:
+					gk->keycol = gk->t_lastcol;
+					gk->keyrow = gk->t_lastrow;
+					if (gk->keyrow != gk->lastkeyrow || gk->keycol != gk->lastkeycol) {
+						gk->w.g.flags |= GKEYBOARD_FLG_QUICKUPDATE;
+						_gwinUpdate((GHandle)gw);
+					}
+				break;
+		}
+	}
+
+	static void KeyToggleAssign(GWidgetObject *gw, uint16_t role, uint16_t instance) {
+		switch(role){
+			case 0:  gk->t_up = instance; break;
+			case 1:	 gk->t_down = instance;	 break;
+			case 2:	 gk->t_left = instance;	 break;
+			case 3:  gk->t_right = instance; break;
+			default: gk->t_press = instance; break;
+		}
+	}
+
+	static uint16_t KeyToggleGet(GWidgetObject *gw, uint16_t role) {
+		switch(role){
+			case 0:  return gk->t_up; break;
+			case 1:	 return gk->t_down;	break;
+			case 2:	 return gk->t_left;	break;
+			case 3:  return gk->t_right; break;
+			default: return gk->t_press; break;
+		}
+	}
+
+	#undef gk
+
+	uint8_t gwinKeyboardGetSelected(GHandle gh, uint8_t *utf8_str){
+		#define gk		((GKeyboardObject *)gh)
+		uint8_t             len;
+		const GVSpecialKey	*skey;
+		unsigned			i;
+		const utf8 *krow = (const utf8 *)gk->keyset[gk->keyrow];
+		gk->key = UTF8CharAt(krow, gk->keycol);
+		if (gk->key < 0x20) {
+			skey = &gk->keytable->skeys[gk->key-1];
+			for(i=0; skey->sendkey[i]; i++)
+				utf8_str[i] = skey->sendkey[i];
+		} else
+			i = UCode2UTF8((utf8 *)utf8_str, gk->key);
+		len = i;
+		for(; i < 4; i++)
+			utf8_str[i] = 0;
+
+		return len;
+	}
+
+	#undef gk
+#endif
+
 extern const GVKeyTable GWIN_KEYBOARD_DEFAULT_LAYOUT;
 
 // The button VMT table
@@ -320,11 +479,11 @@ static const gwidgetVMT keyboardVMT = {
 	#endif
 	#if GINPUT_NEED_TOGGLE
 		{
-			0,						// No toggle roles
-			0,						// Assign Toggles
-			0,						// Get Toggles
-			0,						// Process toggle off events
-			0,						// Process toggle on events
+			5,						// Five toggle roles
+			KeyToggleAssign,		// Assign toggles
+			KeyToggleGet,			// Get toggles
+			0,
+			KeyToggleOn,			// Process toggle on event
 		},
 	#endif
 	#if GINPUT_NEED_DIAL
@@ -344,6 +503,18 @@ GHandle gwinGKeyboardCreate(GDisplay *g, GKeyboardObject *gk, const GWidgetInit 
 	gk->keytable = &GWIN_KEYBOARD_DEFAULT_LAYOUT;
 	gk->keyset = gk->keytable->ksets[0];
 	gk->lastkeyrow = gk->lastkeycol = gk->keyrow = gk->keycol = GKEY_BAD_ROWCOL;
+
+	#if GINPUT_NEED_TOGGLE
+		gk->t_row = GKEY_BAD_ROWCOL;
+		gk->t_col = GKEY_BAD_ROWCOL;
+		gk->t_lastcol = 0;
+		gk->t_lastrow = 0;
+		gk->t_up = GWIDGET_NO_INSTANCE;
+		gk->t_down = GWIDGET_NO_INSTANCE;
+		gk->t_left = GWIDGET_NO_INSTANCE;
+		gk->t_right = GWIDGET_NO_INSTANCE;
+		gk->t_press = GWIDGET_NO_INSTANCE;
+	#endif
 
 	if (!AllKeyboards)
 		AllKeyboards = ginputGetKeyboard(GKEYBOARD_ALL_INSTANCES);
@@ -394,9 +565,11 @@ void gwinKeyboardDraw_Normal(GWidgetObject *gw, void *param) {
 	const utf8 *krow;
 	coord_t x, y, cx, cy;
 	uint8_t rows, cols, row, col, kcols;
+	uint8_t focus = 0;
 	ucode key;
 	fixed fx, fy;
 	const GColorSet *pcol;
+	const color_t fcol = gk->w.pstyle->focus;
 
 	(void) param;
 
@@ -422,26 +595,40 @@ void gwinKeyboardDraw_Normal(GWidgetObject *gw, void *param) {
 			// Get the correct color set
 			if (!(gk->w.g.flags & GWIN_FLG_SYSENABLED))
 					pcol = &gk->w.pstyle->disabled;
-			else 
+			else
 				pcol = &gk->w.pstyle->enabled;
-        	 
+
 			// Get the key
 			key = UTF8CharAt(krow, col);
-	
+
 			// Fuse identical keys into one big key
 			kcols = col+1;
 			while (UTF8CharAt(krow, kcols) == key)
 				kcols++;
-        	 
+
+			//default to not drawing a focus box
+			focus = 0;
+
 			// If quick update needed and keyboard already drawn (if not use this flag, then bug when screen touched before keyboard was drawn)
 			if ( (gk->w.g.flags & GKEYBOARD_FLG_QUICKUPDATE) && !(gk->w.g.flags & GWIN_FLG_BGREDRAW) )  {
+				#if GINPUT_NEED_TOGGLE
+				if (gk->t_col != GKEY_BAD_ROWCOL && gk->t_row != GKEY_BAD_ROWCOL){
+					if (gk->t_col == col && gk->t_row == row){
+						focus = 1;
+					}
+					else if (gk->t_lastcol == col && gk->t_lastrow == row){
+						focus = 0;
+					}
+					else continue;
+				}
+				#endif
 
 				// If key pressed
-				if ( (gk->keyrow != GKEY_BAD_ROWCOL) && (gk->keycol != GKEY_BAD_ROWCOL) ) {
+				else if ( (gk->keyrow != GKEY_BAD_ROWCOL) && (gk->keycol != GKEY_BAD_ROWCOL) ) {
 
 					// And previous key have
 					if ( (gk->lastkeyrow != GKEY_BAD_ROWCOL) && (gk->lastkeycol != GKEY_BAD_ROWCOL) ) {
-						
+
 						if (gk->lastkeyrow == row && gk->lastkeycol == col) {
 							// If keyboard has no "disabled" color
 							if (pcol != &gk->w.pstyle->disabled)
@@ -474,33 +661,41 @@ void gwinKeyboardDraw_Normal(GWidgetObject *gw, void *param) {
 				{
 					if ( (gk->lastkeyrow == row) && (gk->lastkeycol == col) )
 					{
+						#if GINPUT_NEED_TOGGLE
+						if (gk->t_col == GKEY_BAD_ROWCOL && gk->t_row == GKEY_BAD_ROWCOL && gk->t_lastcol == col && gk->t_lastrow == row)
+							focus = 1;
+						#endif
 						if (pcol != &gk->w.pstyle->disabled) pcol = &gk->w.pstyle->enabled;
 					}
 					else continue;
 				}
-			}                  
+			}
 			else
 			{
 				gk->lastkeyrow = gk->lastkeycol = GKEY_BAD_ROWCOL;
+				#if GINPUT_NEED_TOGGLE
+				if (gk->t_lastcol == col && gk->t_lastrow == row)
+					focus = 1;
+				#endif
 			}
 
 			x = NONFIXED(fx * col + FIXED0_5);
 			cx = NONFIXED(fx * kcols + FIXED0_5) - x;
-			
+
 			if (key < 0x20) {
 				pcap = gk->keytable->skeys[key-1].keycap;
 			} else {
 				cap[UCode2UTF8((utf8 *)cap, key)] = 0;
 				pcap = cap;
 			}
-			
+
 			switch(*pcap) {
 
 			case  '\001':	// Shift (up-arrow)
 				gdispGFillArea(gw->g.display, gw->g.x+x, gw->g.y+y, cx, cy, pcol->fill);
 
 				gdispGDrawLine(gw->g.display, gw->g.x+x    +cx/4, gw->g.y+y+cy/2, gw->g.x+x+cx/2, gw->g.y+y +cy/4, pcol->text);               /*    / \    */
-				gdispGDrawLine(gw->g.display, gw->g.x+x+cx -cx/4, gw->g.y+y+cy/2, gw->g.x+x+cx/2, gw->g.y+y +cy/4, pcol->text); 
+				gdispGDrawLine(gw->g.display, gw->g.x+x+cx -cx/4, gw->g.y+y+cy/2, gw->g.x+x+cx/2, gw->g.y+y +cy/4, pcol->text);
 				gdispGDrawLine(gw->g.display, gw->g.x+x    +cx/4, gw->g.y+y+cy/2, gw->g.x+x+cx/2-cx/6, gw->g.y+y+cy/2, pcol->text);           /*    _ _    */
 				gdispGDrawLine(gw->g.display, gw->g.x+x+cx -cx/4, gw->g.y+y+cy/2, gw->g.x+x+cx/2+cx/6, gw->g.y+y+cy/2, pcol->text);
 				gdispGDrawLine(gw->g.display, gw->g.x+x+cx/2-cx/6, gw->g.y+y+cy/2, gw->g.x+x+cx/2-cx/6, gw->g.y+y+cy -cy/3, pcol->text);      /*    ||     */
@@ -513,7 +708,7 @@ void gwinKeyboardDraw_Normal(GWidgetObject *gw, void *param) {
 				gdispGFillArea(gw->g.display, gw->g.x+x, gw->g.y+y, cx, cy, pcol->fill);
 
 				gdispGDrawLine(gw->g.display, gw->g.x+x    +cx/4, gw->g.y+y+cy/2, gw->g.x+x+cx/2, gw->g.y+y +cy/4, pcol->text);               /*   / \     */
-				gdispGDrawLine(gw->g.display, gw->g.x+x+cx -cx/4, gw->g.y+y+cy/2, gw->g.x+x+cx/2, gw->g.y+y +cy/4, pcol->text);    
+				gdispGDrawLine(gw->g.display, gw->g.x+x+cx -cx/4, gw->g.y+y+cy/2, gw->g.x+x+cx/2, gw->g.y+y +cy/4, pcol->text);
 				gdispGDrawLine(gw->g.display, gw->g.x+x    +cx/4, gw->g.y+y+cy/2, gw->g.x+x+cx/2-cx/6, gw->g.y+y+cy/2, pcol->text);           /*   _ _     */
 				gdispGDrawLine(gw->g.display, gw->g.x+x+cx -cx/4, gw->g.y+y+cy/2, gw->g.x+x+cx/2+cx/6, gw->g.y+y+cy/2, pcol->text);
 				gdispGDrawLine(gw->g.display, gw->g.x+x+cx/2-cx/6, gw->g.y+y+cy/2, gw->g.x+x+cx/2-cx/6, gw->g.y+y+cy -cy/3, pcol->text);      /*    ||     */
@@ -553,23 +748,57 @@ void gwinKeyboardDraw_Normal(GWidgetObject *gw, void *param) {
 
 			default:   // Regular character
 				gdispGFillStringBox(gw->g.display, gw->g.x+x, gw->g.y+y, cx, cy, pcap, gw->g.font, pcol->text, pcol->fill, justifyCenter);
-				
+				//if (focus)
+				//	gdispGDrawBox(gw->g.display, gw->g.x+x, gw->g.y+y, cx, cy, 0xFF00);
 				break;
 			}
-			
+
 			// Draw the frame (border around the entire widget)
-			gdispGDrawBox(gw->g.display, gw->g.x+x, gw->g.y+y, cx, cy, pcol->edge);
-			
+			if (focus){
+				gdispGDrawBox(gw->g.display, gw->g.x+x, gw->g.y+y, cx, cy, fcol);
+				gdispGDrawBox(gw->g.display, gw->g.x+x+1, gw->g.y+y+1, cx-2, cy-2, fcol);
+			}
+			else
+				gdispGDrawBox(gw->g.display, gw->g.x+x, gw->g.y+y, cx, cy, pcol->edge);
+
 			// If key up and we already cleared the previous key
 			if ( (gk->keyrow == GKEY_BAD_ROWCOL) && (gk->keycol == GKEY_BAD_ROWCOL) && (gk->lastkeyrow == row) && (gk->lastkeycol == col) ) {
 			   gk->lastkeyrow = gk->lastkeycol = GKEY_BAD_ROWCOL;
 			   return;
 			}
-
+			#if GINPUT_NEED_TOGGLE
+			//clear focus box flags
+			if (gk->t_col != GKEY_BAD_ROWCOL && gk->t_row != GKEY_BAD_ROWCOL){
+				//If we have just drawn new focus,
+				if (gk->t_col == col && gk->t_row == row){
+					//and already cleared old focus
+					if((row > gk->t_lastrow) || (row == gk->t_lastrow && (col > gk->t_lastcol))) {
+						gk->t_lastcol = gk->t_col;
+						gk->t_lastrow = gk->t_row;
+						gk->t_col = gk->t_row = GKEY_BAD_ROWCOL;
+						return;
+					}
+				}
+				// if we have just cleared old focus,
+				else if (gk->t_lastcol == col && gk->t_lastrow == row){
+					//and already drawn new focus
+					if ((row > gk->t_row) || (row == gk->t_row && (col > gk->t_col))){
+						gk->t_lastcol = gk->t_col;
+						gk->t_lastrow = gk->t_row;
+						gk->t_col = gk->t_row = GKEY_BAD_ROWCOL;
+						return;
+					}
+				}
+			}
+			#endif
 			// Just quit the cycle if we did all the work in order not to waste any CPU time
 			if ( (row >= gk->keyrow && col >= gk->keycol) && (row >= gk->lastkeyrow && col >= gk->lastkeycol) ) {
-				return;
+				#if GINPUT_NEED_TOGGLE
+				if ( (gk->t_col == GKEY_BAD_ROWCOL) && (gk->t_row == GKEY_BAD_ROWCOL))
+				#endif
+					return;
 			}
+
 		}
 	}
 

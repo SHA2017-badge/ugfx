@@ -88,6 +88,8 @@ GHandle gwinGTexteditCreate(GDisplay* g, GTexteditObject* wt, GWidgetInit* pInit
  */
 void gwinTexteditDefaultDraw(GWidgetObject* gw, void* param);
 
+void gwinTexteditBackspace(GWidgetObject* gw);
+
 /** @} */
 
 #ifdef __cplusplus

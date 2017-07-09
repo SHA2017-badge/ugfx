@@ -46,6 +46,16 @@ static bool_t resizeText(GWidgetObject* gw, size_t pos, int32_t diff) {
 	return TRUE;
 }
 
+void gwinTexteditBackspace(GWidgetObject* gw) {
+	if (!gw2obj->cursorPos)
+		return;
+
+	gw2obj->cursorPos--;
+	resizeText(gw, gw2obj->cursorPos, -1);
+
+	_gwinUpdate((GHandle)gw);
+}
+
 // Function that allows to set the cursor to any position in the string
 // This should be optimized. Currently it is an O(n^2) problem and therefore very
 // slow. An optimized version would copy the behavior of mf_get_string_width()
@@ -113,11 +123,7 @@ static void TextEditMouseDown(GWidgetObject* gw, coord_t x, coord_t y) {
 			// Normal key press
 			switch((uint8_t)pke->c[0]) {
 			case GKEY_BACKSPACE:
-				// Backspace
-				if (!gw2obj->cursorPos)
-					return;
-				gw2obj->cursorPos--;
-				resizeText(gw, gw2obj->cursorPos, -1);
+				gwinTexteditBackspace(gw);
 				break;
 			case GKEY_TAB:
 			case GKEY_LF:

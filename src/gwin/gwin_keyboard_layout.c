@@ -20,15 +20,15 @@
 	 * Set 4 = Symbols
 	 */
 	static const GVSpecialKey Eng1SKeys[] = {
-			{ "\001", 0, GVKEY_SINGLESET, 1 },				// \001 (1)	= Shift Lower to Upper
-			{ "\001", 0, GVKEY_INVERT|GVKEY_LOCKSET, 2 },	// \002 (2)	= Shift Upper to Upper Lock
-			{ "\002", 0, GVKEY_INVERT|GVKEY_LOCKSET, 0 },	// \003 (3)	= Shift Upper Lock to Lower
-			{ "123", 0, GVKEY_LOCKSET, 3 },					// \004 (4)	= Change to Numbers
+			{ "\001", NULL, GVKEY_SINGLESET, 1 },				// \001 (1)	= Shift Lower to Upper
+			{ "\001", NULL, GVKEY_INVERT|GVKEY_LOCKSET, 2 },	// \002 (2)	= Shift Upper to Upper Lock
+			{ "\002", NULL, GVKEY_INVERT|GVKEY_LOCKSET, 0 },	// \003 (3)	= Shift Upper Lock to Lower
+			{ "123", NULL, GVKEY_LOCKSET, 3 },					// \004 (4)	= Change to Numbers
 			{ "\010", "\b", 0, 0 },							// \005 (5)	= Backspace
 			{ "\015", "\r", 0, 0 },							// \006 (6)	= Enter 1
 			{ "\015", "\r", 0, 0 },							// \007 (7)	= Enter 2 (Short keycap)
-			{ "Sym", 0, GVKEY_LOCKSET, 4 },					// \010 (8)	= Change to Symbols
-			{ "aA", 0, GVKEY_LOCKSET, 0 },					// \011 (9)	= Change to Lower Alpha
+			{ "Sym", NULL, GVKEY_LOCKSET, 4 },					// \010 (8)	= Change to Symbols
+			{ "aA", NULL, GVKEY_LOCKSET, 0 },					// \011 (9)	= Change to Lower Alpha
 	};
 	static const char Eng1Set0Row3[] = "\004  .\006\006";
 	static const char Eng1Set1Row0[] = "QWERTYUIOP";

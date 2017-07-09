@@ -439,6 +439,8 @@ static void SendVirtualKeyEvent(GKeyboardObject *gk) {
 		gk->key = UTF8CharAt(krow, gk->keycol);
 		if (gk->key < 0x20) {
 			skey = &gk->keytable->skeys[gk->key-1];
+			if(skey->sendkey == NULL)
+				return 0;
 			for(i=0; skey->sendkey[i]; i++)
 				utf8_str[i] = skey->sendkey[i];
 		} else

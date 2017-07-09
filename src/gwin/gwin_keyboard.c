@@ -171,50 +171,9 @@ static void SendVirtualKeyEvent(GKeyboardObject *gk) {
 		SendVirtualKeyEventToListener(psl, gk);
 }
 
-
-#if GINPUT_NEED_MOUSE
-	// Find the key from the keyset and the x, y position
-	static void KeyFindKey(GKeyboardObject *gk, coord_t x, coord_t y) {
-		const utf8		*krow;
-		fixed			f;
-		int				idx;
-
-		if (x < 0 || y < 0 || x >= gk->w.g.width || y >= gk->w.g.height) {
-			gk->keyrow = gk->keycol = GKEY_BAD_ROWCOL;
-			return;
-		}
-
-		// Get the y parameters
-		f = FIXED(gk->w.g.height) / NumKeyRows(gk->keyset);
-		gk->keyrow = FIXED(y) / f;
-		gk->keyy = NONFIXED(f * gk->keyrow + FIXED0_5);
-		gk->keycy = NONFIXED(f * (gk->keyrow+1) + FIXED0_5) - gk->keyy;
-
-		// Get the current row
-		krow = (const utf8 *)gk->keyset[gk->keyrow];
-
-		// Get the x parameters
-		f = FIXED(gk->w.g.width) / UTF8StrLen(krow);
-		gk->keycol = FIXED(x) / f;
-
-		// Get the key
-		gk->key = UTF8CharAt(krow, gk->keycol);
-
-		// Amalgamate identical keys into one big key
-		idx = gk->keycol;
-		while(gk->keycol > 0 && UTF8CharAt(krow, gk->keycol-1) == gk->key)
-			gk->keycol--;
-		while(UTF8CharAt(krow, ++idx) == gk->key);
-		gk->keyx = NONFIXED(f * gk->keycol + FIXED0_5);
-		gk->keycx = NONFIXED(f * idx + FIXED0_5) - gk->keyx;
-	}
-
-	// A mouse up has occurred (it may or may not be over the button)
-	static void KeyMouseUp(GWidgetObject *gw, coord_t x, coord_t y) {
-		#define gk		((GKeyboardObject *)gw)
-
-		KeyFindKey(gk, x, y);
-
+#if GINPUT_NEED_MOUSE || GINPUT_NEED_TOGGLE
+#define gk		((GKeyboardObject *)gw)
+	static void KeyUp(GWidgetObject *gw){
 		// Do we have a valid key?
 		if (gk->keyrow == GKEY_BAD_ROWCOL) {
 			if (gk->lastkeyrow != GKEY_BAD_ROWCOL) {
@@ -278,6 +237,55 @@ static void SendVirtualKeyEvent(GKeyboardObject *gk) {
 
 		// Update the display
 		_gwinUpdate((GHandle)gw);
+	}
+#undef gk
+#endif
+
+#if GINPUT_NEED_MOUSE
+	// Find the key from the keyset and the x, y position
+	static void KeyFindKey(GKeyboardObject *gk, coord_t x, coord_t y) {
+		const utf8		*krow;
+		fixed			f;
+		int				idx;
+
+		if (x < 0 || y < 0 || x >= gk->w.g.width || y >= gk->w.g.height) {
+			gk->keyrow = gk->keycol = GKEY_BAD_ROWCOL;
+			return;
+		}
+
+		// Get the y parameters
+		f = FIXED(gk->w.g.height) / NumKeyRows(gk->keyset);
+		gk->keyrow = FIXED(y) / f;
+		gk->keyy = NONFIXED(f * gk->keyrow + FIXED0_5);
+		gk->keycy = NONFIXED(f * (gk->keyrow+1) + FIXED0_5) - gk->keyy;
+
+		// Get the current row
+		krow = (const utf8 *)gk->keyset[gk->keyrow];
+
+		// Get the x parameters
+		f = FIXED(gk->w.g.width) / UTF8StrLen(krow);
+		gk->keycol = FIXED(x) / f;
+
+		// Get the key
+		gk->key = UTF8CharAt(krow, gk->keycol);
+
+		// Amalgamate identical keys into one big key
+		idx = gk->keycol;
+		while(gk->keycol > 0 && UTF8CharAt(krow, gk->keycol-1) == gk->key)
+			gk->keycol--;
+		while(UTF8CharAt(krow, ++idx) == gk->key);
+		gk->keyx = NONFIXED(f * gk->keycol + FIXED0_5);
+		gk->keycx = NONFIXED(f * idx + FIXED0_5) - gk->keyx;
+	}
+
+	// A mouse up has occurred (it may or may not be over the button)
+	static void KeyMouseUp(GWidgetObject *gw, coord_t x, coord_t y) {
+		#define gk		((GKeyboardObject *)gw)
+
+		KeyFindKey(gk, x, y);
+
+		KeyUp(gw);
+
 	}
 
 	// A mouse move has occurred (it may or may not be over the button)
@@ -408,6 +416,20 @@ static void SendVirtualKeyEvent(GKeyboardObject *gk) {
 		}
 	}
 
+	static void KeyToggleOff(GWidgetObject *gw, uint16_t role) {
+
+		if (role == 4){
+
+			// Get the current row
+			const utf8 *krow = (const utf8 *)gk->keyset[gk->keyrow];
+
+			// Get the key
+			gk->key = UTF8CharAt(krow, gk->keycol);
+
+			KeyUp(gw);
+		}
+	}
+
 	static void KeyToggleAssign(GWidgetObject *gw, uint16_t role, uint16_t instance) {
 		switch(role){
 			case 0:  gk->t_up = instance; break;
@@ -484,7 +506,7 @@ static const gwidgetVMT keyboardVMT = {
 			5,						// Five toggle roles
 			KeyToggleAssign,		// Assign toggles
 			KeyToggleGet,			// Get toggles
-			0,
+			KeyToggleOff,
 			KeyToggleOn,			// Process toggle on event
 		},
 	#endif

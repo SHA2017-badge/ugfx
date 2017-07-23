@@ -666,7 +666,7 @@ void _gdispPostInitDriver(GDriver *g) {
 
 	// Flush
 	#if GDISP_HARDWARE_FLUSH
-		gdispGFlush(gd);
+	//	gdispGFlush(gd);
 	#endif
 
 	// If this is the first driver set GDISP
@@ -1383,7 +1383,7 @@ void gdispGBlitArea(GDisplay *g, coord_t x, coord_t y, coord_t cx, coord_t cy, c
 			do { p2 -= --b2; } while (p2+a >= b2);
 			p2 += a;
 		} while(++a <= radius2 && a < b1);
-		
+
 		if (a < radius2) {
 			// Do the combined circle where inner circle > 45 deg, outer circle > 45
 			do {
@@ -1394,7 +1394,7 @@ void gdispGBlitArea(GDisplay *g, coord_t x, coord_t y, coord_t cx, coord_t cy, c
 				do { p2 -= --b2; } while (p2+a >= b2);
 				p2 += a++;
 			} while(b2 > 0);
-			
+
 		} else {
 			// Do the outer circle above the inner circle but < 45 deg
 			do {
@@ -1992,7 +1992,7 @@ void gdispGBlitArea(GDisplay *g, coord_t x, coord_t y, coord_t cx, coord_t cy, c
 					if(curangle + 3*precision > startTan && curangle + 3*precision < endTan){g->p.y = yc - x; g->p.x = xc - y; drawpixel_clip(g);}
 					if(curangle + 5*precision > startTan && curangle + 5*precision < endTan){g->p.y = yc + y; g->p.x = xc - x; drawpixel_clip(g);}
 					if(curangle + 7*precision > startTan && curangle + 7*precision < endTan){g->p.y = yc + x; g->p.x = xc + y; drawpixel_clip(g);}
-						
+
 				}
 				else{
 					//Draw points by symmetry
@@ -2006,7 +2006,7 @@ void gdispGBlitArea(GDisplay *g, coord_t x, coord_t y, coord_t cx, coord_t cy, c
 					if(curangle + precision > startTan || curangle + precision < endTan){g->p.y = yc - y; g->p.x = xc + x; drawpixel_clip(g);}
 					if(curangle + 3*precision > startTan || curangle + 3*precision < endTan){g->p.y = yc - x; g->p.x = xc - y; drawpixel_clip(g);}
 					if(curangle + 5*precision > startTan || curangle + 5*precision < endTan){g->p.y = yc + y; g->p.x = xc - x; drawpixel_clip(g);}
-					if(curangle + 7*precision > startTan || curangle + 7*precision < endTan){g->p.y = yc + x; g->p.x = xc + y; drawpixel_clip(g);}					
+					if(curangle + 7*precision > startTan || curangle + 7*precision < endTan){g->p.y = yc + x; g->p.x = xc + y; drawpixel_clip(g);}
 				}
 
 				//Compute next point
@@ -3128,13 +3128,13 @@ void gdispGDrawBox(GDisplay *g, coord_t x, coord_t y, coord_t cx, coord_t cy, co
 		/* Give a max number of steps, the calculation usually takes 3 or 4 */
 		for(maxSteps = 8; maxSteps > 0; maxSteps--)
 		{
-			/* Use an adapted version of Newton's algorithm to find the correct length 
+			/* Use an adapted version of Newton's algorithm to find the correct length
 			 * This calculation converge quadratically towards the correct length
-			 * n(x+1) = (n(x) + len^2 / n(x)) / 2 
+			 * n(x+1) = (n(x) + len^2 / n(x)) / 2
 			 */
 			len_n = (len + len2 / len) / 2;
 
-			/* We reach max precision when the last result is equal or greater than the previous one */ 
+			/* We reach max precision when the last result is equal or greater than the previous one */
 			if(len_n >= len){
 				break;
 			}
@@ -3360,7 +3360,7 @@ void gdispGDrawBox(GDisplay *g, coord_t x, coord_t y, coord_t cx, coord_t cy, co
 				GD->t.wrapy += GD->t.font->line_height;
 			#undef GD
 			return TRUE;
-		}	
+		}
 	#endif
 
 	void gdispGDrawChar(GDisplay *g, coord_t x, coord_t y, uint16_t c, font_t font, color_t color) {
@@ -3459,7 +3459,7 @@ void gdispGDrawBox(GDisplay *g, coord_t x, coord_t y, coord_t cx, coord_t cy, co
 				#endif
 			}
 		#endif
-			
+
 		// Save the clipping area
 		g->t.clipx0 = x;
 		g->t.clipy0 = y;
@@ -3507,7 +3507,7 @@ void gdispGDrawBox(GDisplay *g, coord_t x, coord_t y, coord_t cx, coord_t cy, co
 				g->t.lrj = (justify & JUSTIFYMASK_LEFTRIGHT);
 				g->t.wrapx = x;
 				g->t.wrapy = y;
-				
+
 				mf_wordwrap(font, cx, str, mf_drawline_callback, g);
 			} else
 		#endif
@@ -3548,7 +3548,7 @@ void gdispGDrawBox(GDisplay *g, coord_t x, coord_t y, coord_t cx, coord_t cy, co
 					#endif
 				}
 			#endif
-			
+
 			// Save the clipping area
 			g->t.clipx0 = x;
 			g->t.clipy0 = y;
@@ -3565,7 +3565,7 @@ void gdispGDrawBox(GDisplay *g, coord_t x, coord_t y, coord_t cx, coord_t cy, co
 				} else
 			#endif
 			totalHeight = font->height;
-	
+
 			// Select the anchor position
 			switch((justify & JUSTIFYMASK_TOPBOTTOM)) {
 			case justifyTop:
@@ -3597,7 +3597,7 @@ void gdispGDrawBox(GDisplay *g, coord_t x, coord_t y, coord_t cx, coord_t cy, co
 					g->t.lrj = (justify & JUSTIFYMASK_LEFTRIGHT);
 					g->t.wrapx = x;
 					g->t.wrapy = y;
-					
+
 					mf_wordwrap(font, cx, str, mf_fillline_callback, g);
 				} else
 			#endif

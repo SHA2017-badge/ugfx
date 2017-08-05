@@ -537,6 +537,7 @@ void gwinListDeleteAll(GHandle gh) {
 void gwinListItemDelete(GHandle gh, int item) {
 	const gfxQueueASyncItem	*	qi;
 	int							i;
+	coord_t						iheight;
 
 	// is it a valid handle?
 	if (gh->vmt != (gwinVMT *)&listVMT)
@@ -546,13 +547,19 @@ void gwinListItemDelete(GHandle gh, int item) {
 	if (item < 0 || item >= gh2obj->cnt)
 		return;
 
+	iheight = gdispGetFontMetric(gh->font, fontHeight) + LST_VERT_PAD;
+
 	for(qi = gfxQueueASyncPeek(&gh2obj->list_head), i = 0; qi; qi = gfxQueueASyncNext(qi), i++) {
 		if (i == item) {
 			gfxQueueASyncRemove(&gh2obj->list_head, (gfxQueueASyncItem*)qi);
 			gfxFree((void *)qi);
 			gh2obj->cnt--;
-			if (gh2obj->top >= item && gh2obj->top)
-				gh2obj->top--;
+			if (gh2obj->top >= item && gh2obj->top) {
+				if (gh2obj->top >= iheight)
+					gh2obj->top -= iheight;
+				else
+					gh2obj->top = 0;
+			}
 			_gwinUpdate(gh);
 			break;
 		}

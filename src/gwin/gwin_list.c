@@ -31,6 +31,7 @@
 #define qix2li		((ListItem *)qix)
 #define ple			((GEventGWinList *)pe)
 
+#if GINPUT_NEED_MOUSE
 static void sendListEvent(GWidgetObject *gw, int item) {
 	GSourceListener*	psl;
 	GEvent*				pe;
@@ -52,6 +53,7 @@ static void sendListEvent(GWidgetObject *gw, int item) {
 		geventSendEvent(psl);
 	}
 }
+#endif
 
 #if GINPUT_NEED_MOUSE
     static void ListMouseSelect(GWidgetObject* gw, coord_t x, coord_t y) {

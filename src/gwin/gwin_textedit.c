@@ -61,6 +61,7 @@ void gwinTexteditBackspace(GWidgetObject* gw) {
 // slow. An optimized version would copy the behavior of mf_get_string_width()
 // and do the comparation directly inside of that loop so we only iterate
 // the string once.
+#if GINPUT_NEED_MOUSE
 static void TextEditMouseDown(GWidgetObject* gw, coord_t x, coord_t y) {
 	uint16_t i = 0;
 
@@ -82,6 +83,7 @@ static void TextEditMouseDown(GWidgetObject* gw, coord_t x, coord_t y) {
 
 	_gwinUpdate((GHandle)gw);
 }
+#endif
 
 #if (GFX_USE_GINPUT && GINPUT_NEED_KEYBOARD) || GWIN_NEED_KEYBOARD
 	static void TextEditKeyboard(GWidgetObject* gw, GEventKeyboard* pke) {
